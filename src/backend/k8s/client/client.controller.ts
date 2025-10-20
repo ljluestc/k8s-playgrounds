@@ -2,11 +2,15 @@ import { KubernetesObject } from '@kubernetes/client-node'
 import {
   Body,
   Controller,
-  Get, Param, Post,
+  Get,
+  Injectable,
+  Param,
+  Post
 } from '@nestjs/common'
 import { K8sService } from '@backend/k8s/k8s.service'
 import YAML from 'yaml'
 
+@Injectable()
 @Controller('k8s/Client')
 export class ClientController {
   constructor(

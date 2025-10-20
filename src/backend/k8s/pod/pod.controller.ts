@@ -1,8 +1,9 @@
 import { K8sService } from '@backend/k8s/k8s.service'
 import { V1Pod } from '@kubernetes/client-node'
-import { Body, Controller, Get, Param, Post, Req, Request, StreamableFile } from '@nestjs/common'
+import { Body, Controller, Get, Injectable, Param, Post, Req, Request, StreamableFile } from '@nestjs/common'
 
 @Controller('k8s/Pod')
+@Injectable()
 export class PodController {
   constructor(
     private k8sService: K8sService,

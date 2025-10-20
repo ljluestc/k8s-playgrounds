@@ -1,0 +1,103 @@
+const { readFileSync, writeFileSync } = require('node:fs')
+const { glob } = require('glob')
+
+async function fixServiceTests() {
+  const serviceTestFiles = glob.sync('src/backend/k8s/**/*.service.spec.ts')
+
+  for (const filePath of serviceTestFiles) {
+    console.log(`Processing ${filePath}...`)
+
+    let content = readFileSync(filePath, 'utf8')
+
+    // Add imports for helper functions
+    if (!content.includes('createSecret') && !content.includes('createStatefulSet')) {
+      // Determine which helper functions are needed based on the service type
+      const serviceType = filePath.split('/').pop().split('.')[0].replace('.service', '')
+      const helperImports = []
+
+      if (serviceType.includes('secret'))
+        helperImports.push('createSecret')
+
+      if (serviceType.includes('statefulset'))
+        helperImports.push('createStatefulSet')
+
+      if (serviceType.includes('deployment'))
+        helperImports.push('createDeployment')
+
+      if (serviceType.includes('pod'))
+        helperImports.push('createPod')
+
+      if (serviceType.includes('service') || serviceType.includes('NetworkSvc'))
+        helperImports.push('createService')
+
+      if (serviceType.includes('configmap'))
+        helperImports.push('createConfigMap')
+
+      if (serviceType.includes('role'))
+        helperImports.push('createRole')
+
+      if (serviceType.includes('cronjob'))
+        helperImports.push('createCronJob')
+
+      if (serviceType.includes('daemonset'))
+        helperImports.push('createDaemonSet')
+
+      if (serviceType.includes('job'))
+        helperImports.push('createJob')
+
+      if (serviceType.includes('replicaset'))
+        helperImports.push('createReplicaSet')
+
+      if (serviceType.includes('node'))
+        helperImports.push('createNode')
+
+      if (serviceType.includes('ns') || serviceType.includes('namespace'))
+        helperImports.push('createNamespace')
+
+      if (serviceType.includes('event'))
+        helperImports.push('createEvent')
+
+      if (helperImports.length > 0) {
+        const importStatement = `import { createMockClientService, ${helperImports.join(', ')} } from '../../../test/utils/k8s-mocks';`
+        content = content.replace(
+          /import { ClientService } from '\.\.\/client\/client\.service';/,
+          `import { ClientService } from '../client/client.service';
+${importStatement}`,
+        )
+      }
+    }
+
+    // Replace the ClientService mock setup
+    const mockPattern = /const module: TestingModule = await Test\.createTestingModule\(\{\s*providers: \[\s*\{\s*provide: ClientService,\s*useValue: \{[^}]*\}\s*,\s*\}\s*\],\s*\}\)\.compile\(\);/s
+
+    if (mockPattern.test(content)) {
+      content = content.replace(
+        mockPattern,
+        `const mockClientService = createMockClientService();
+    
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ClientService,
+          useValue: mockClientService,
+        },
+      ],
+    }).compile();`,
+      )
+    }
+
+    // Fix any remaining mockK8sApi references
+    if (content.includes('mockK8sApi')) {
+      content = content.replace(/const mockK8sApi = mockClientService\.getCoreV1Api\(\);/g, 'const mockK8sApi = mockClientService.getCoreV1Api();')
+      content = content.replace(/const mockK8sApi = mockClientService\.getAppsV1Api\(\);/g, 'const mockK8sApi = mockClientService.getAppsV1Api();')
+      content = content.replace(/const mockK8sApi = mockClientService\.getBatchV1Api\(\);/g, 'const mockK8sApi = mockClientService.getBatchV1Api();')
+    }
+
+    writeFileSync(filePath, content)
+    console.log(`Updated ${filePath}`)
+  }
+
+  console.log('All service test files updated!')
+}
+
+fixServiceTests().catch(console.error)

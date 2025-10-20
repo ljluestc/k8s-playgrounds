@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Get,
+  Injectable,
   Param, Post,
 } from '@nestjs/common'
 import { K8sService } from '@backend/k8s/k8s.service'
 
+@Injectable()
 @Controller('k8s/NetworkPolicy')
 export class NetworkPolicyController {
   constructor(

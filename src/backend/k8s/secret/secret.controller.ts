@@ -2,11 +2,13 @@ import { JsonDataWrap } from '@backend/model/JsonDataWrap'
 import {
   Body,
   Controller,
-  Get, Logger,
-  Param, Post,
+  Get, Injectable,
+  Logger, Param,
+  Post,
 } from '@nestjs/common'
 import { K8sService } from '@backend/k8s/k8s.service'
 
+@Injectable()
 @Controller('k8s/Secret')
 export class SecretController {
   private readonly logger = new Logger(SecretController.name)

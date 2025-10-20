@@ -1,10 +1,14 @@
 import {
   Body,
   Controller,
-  Get, Param, Post,
+  Get,
+  Injectable,
+  Param,
+  Post
 } from '@nestjs/common'
 import { K8sService } from '@backend/k8s/k8s.service'
 
+@Injectable()
 @Controller('k8s/ValidatingWebhook')
 export class ValidatingWebhookController {
   constructor(

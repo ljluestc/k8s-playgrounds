@@ -1,11 +1,15 @@
 import {
   Body,
   Controller,
-  Get, Logger,
-  Param, Post,
+  Get,
+  Injectable,
+  Logger,
+  Param,
+  Post
 } from '@nestjs/common'
 import { K8sService } from '@backend/k8s/k8s.service'
 
+@Injectable()
 @Controller('k8s/PriorityClass')
 export class PriorityClassController {
   private readonly logger = new Logger(PriorityClassController.name)

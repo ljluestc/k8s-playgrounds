@@ -1,19 +1,23 @@
 import {
   Body,
   Controller,
-  Get, Param, Post,
+  Get, Injectable, Param,
+  Post,
 } from '@nestjs/common'
 import { K8sService } from '@backend/k8s/k8s.service'
+import { PersistentVolumeService } from './PersistentVolume.service'
 
 @Controller('k8s/PersistentVolume')
+@Injectable()
 export class PersistentVolumeController {
   constructor(
     private k8sService: K8sService,
+    private persistentVolumeService: PersistentVolumeService,
   ) {}
 
   @Get('/list')
   async List() {
-    return await this.k8sService.persistentVolumeService.List()
+    return await this.persistentVolumeService.List()
   }
 
   @Post('/delete')
@@ -21,13 +25,13 @@ export class PersistentVolumeController {
     nsn.forEach((r) => {
       const nsname = r.split('/')
       const name = nsname[1]
-      this.k8sService.persistentVolumeService.Delete(name)
+      this.persistentVolumeService.Delete(name)
     })
     return {}
   }
 
   @Get('/:name')
   async GetOneByName(@Param('name') name: string) {
-    return await this.k8sService.persistentVolumeService.GetOneByName(name)
+    return await this.persistentVolumeService.GetOneByName(name)
   }
 }

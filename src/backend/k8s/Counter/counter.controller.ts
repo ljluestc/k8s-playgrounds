@@ -1,6 +1,7 @@
 import { CounterService } from '@backend/k8s/Counter/counter.service'
-import { Controller, Get, Param } from '@nestjs/common'
+import { Controller, Get, Injectable, Param } from '@nestjs/common'
 
+@Injectable()
 @Controller('k8s/Counter')
 export class CounterController {
   constructor(
