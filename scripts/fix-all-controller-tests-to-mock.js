@@ -29,10 +29,6 @@ for (const filePath of testFiles) {
       // Extract the controller name from the file path
       const pathParts = filePath.split('/')
       const controllerName = pathParts[pathParts.length - 2] // e.g., ClusterRole
-      const _controllerFileName = pathParts[pathParts.length - 1].replace('.spec.ts', '.ts') // e.g., ClusterRole.controller.ts
-
-      // Extract the service name (e.g., clusterRoleService)
-      const _serviceName = `${controllerName.charAt(0).toLowerCase() + controllerName.slice(1)}Service`
 
       // Replace the imports
       content = content.replace(

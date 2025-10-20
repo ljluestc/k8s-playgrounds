@@ -1,5 +1,4 @@
 const fs = require('node:fs')
-const _path = require('node:path')
 
 // List of controller files with syntax errors
 const controllerFiles = [

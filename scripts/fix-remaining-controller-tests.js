@@ -1,5 +1,4 @@
 const fs = require('node:fs')
-const _path = require('node:path')
 
 // List of controller test files that need to be fixed
 const testFiles = [
@@ -26,7 +25,6 @@ for (const filePath of testFiles) {
     // Extract the controller name from the file path
     const pathParts = filePath.split('/')
     const controllerName = pathParts[pathParts.length - 2] // e.g., Role
-    const _controllerFileName = pathParts[pathParts.length - 1].replace('.spec.ts', '.ts') // e.g., Role.controller.ts
 
     // Replace the imports
     content = content.replace(
