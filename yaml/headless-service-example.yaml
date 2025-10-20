@@ -1,0 +1,179 @@
+# Headless Service Example
+# Based on the article: https://www.yp14.cn/2019/11/28/K8S-%E4%B9%8B-Headless-%E6%B5%85%E8%B0%88/
+#
+# This example demonstrates:
+# 1. Headless Service with ClusterIP: None
+# 2. StatefulSet integration with stable network identities
+# 3. DNS resolution for individual pods
+# 4. Direct pod-to-pod communication
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-test
+  namespace: default
+  labels:
+    app: nginx_test
+  annotations:
+    description: Headless Service for nginx StatefulSet
+    example.com/headless: 'true'
+spec:
+  # This makes it a Headless Service - no ClusterIP assigned
+  clusterIP: None
+  # Port configuration
+  ports:
+    - name: nginx-web
+      port: 80
+      targetPort: 80
+      protocol: TCP
+  # Selector to match pods
+  selector:
+    app: nginx_test
+  # Session affinity (not applicable for Headless Services)
+  sessionAffinity: None
+  # Type is ClusterIP by default
+  type: ClusterIP
+
+---
+# StatefulSet that uses the Headless Service
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-web
+  namespace: default
+  labels:
+    app: nginx_test
+spec:
+  # Reference to the Headless Service
+  serviceName: nginx-test
+  # Number of replicas
+  replicas: 2
+  # Pod selector
+  selector:
+    matchLabels:
+      app: nginx_test
+  # Pod template
+  template:
+    metadata:
+      labels:
+        app: nginx_test
+    spec:
+      containers:
+        - name: nginx-test
+          image: nginx:1.11
+          ports:
+            - name: nginx-web
+              containerPort: 80
+              protocol: TCP
+          # Environment variables
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          # Resource limits
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 250m
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          # Health checks
+          livenessProbe:
+            httpGet:
+              path: /
+              port: nginx-web
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: nginx-web
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      # Pod security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+  # Volume claim templates for persistent storage
+  volumeClaimTemplates:
+    - metadata:
+        name: nginx-storage
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: standard
+
+---
+# ConfigMap for nginx configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: default
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        upstream backend {
+            # This will resolve to individual pod IPs
+            server nginx-web-0.nginx-test.default.svc.cluster.local:80;
+            server nginx-web-1.nginx-test.default.svc.cluster.local:80;
+        }
+
+        server {
+            listen 80;
+            location / {
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+            }
+        }
+    }
+
+---
+# Service Account for the StatefulSet
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-sa
+  namespace: default
+
+---
+# Role for service discovery
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nginx-role
+  namespace: default
+rules:
+  - apiGroups: ['']
+    resources: [endpoints, services]
+    verbs: [get, list, watch]
+
+---
+# RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nginx-rolebinding
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: nginx-sa
+    namespace: default
+roleRef:
+  kind: Role
+  name: nginx-role
+  apiGroup: rbac.authorization.k8s.io

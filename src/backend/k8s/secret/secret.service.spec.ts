@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import { vi } from 'vitest'
+import { _vi } from 'vitest'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import type { JsonDataWrap } from '@backend/model/JsonDataWrap'

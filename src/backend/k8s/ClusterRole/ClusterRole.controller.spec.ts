@@ -1,6 +1,6 @@
 import { beforeEach, describe, it, vi } from 'vitest'
-import { ClusterRoleController } from './ClusterRole.controller'
 import { createMockK8sService } from '../../../../test/utils/k8s-mocks'
+import { ClusterRoleController } from './ClusterRole.controller'
 
 describe('ClusterRoleController', () => {
   let controller: ClusterRoleController

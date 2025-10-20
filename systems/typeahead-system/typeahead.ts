@@ -42,10 +42,11 @@ export class TypeaheadSystem extends EventEmitter {
   private queryCache: Map<string, TypeaheadResult> = new Map()
   private queryStats: Map<string, number> = new Map()
   private debounceTimers: Map<string, NodeJS.Timeout> = new Map()
+  private pendingSearches: Array<{ resolve: (result: TypeaheadResult) => void; query: string; options: any }> = []
   private config: TypeaheadConfig
   private startTime: Date
 
-  constructor(config: Partial<TypeaheadConfig> = {}) {
+  constructor(config: Partial<TypeaheadConfig & { initializeDefaultData?: boolean }> = {}) {
     super()
     this.config = {
       minQueryLength: 1,
@@ -57,7 +58,10 @@ export class TypeaheadSystem extends EventEmitter {
       ...config,
     }
     this.startTime = new Date()
-    this.initializeDefaultData()
+
+    // Only initialize default data if explicitly requested or not specified
+    if (config.initializeDefaultData !== false)
+      this.initializeDefaultData()
   }
 
   private initializeDefaultData(): void {
@@ -190,15 +194,24 @@ export class TypeaheadSystem extends EventEmitter {
     return new Promise((resolve) => {
       const debounceKey = 'global-search' // Use a single debounce key for all searches
 
+      // Add this search to pending searches
+      this.pendingSearches.push({ resolve, query, options })
+
       // Clear existing debounce timer
       if (this.debounceTimers.has(debounceKey))
         clearTimeout(this.debounceTimers.get(debounceKey)!)
 
       // Set new debounce timer
       const timer = setTimeout(() => {
-        const result = this.search(query, options)
+        // Execute the search with the most recent query and options
+        const lastSearch = this.pendingSearches[this.pendingSearches.length - 1]
+        const result = this.search(lastSearch.query, lastSearch.options)
+
+        // Resolve all pending searches with the same result
+        this.pendingSearches.forEach(search => search.resolve(result))
+        this.pendingSearches = []
+
         this.debounceTimers.delete(debounceKey)
-        resolve(result)
       }, this.config.debounceMs)
 
       this.debounceTimers.set(debounceKey, timer)

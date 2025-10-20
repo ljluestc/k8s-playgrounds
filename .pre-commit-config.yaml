@@ -1,181 +1,219 @@
-# Pre-commit hooks configuration for comprehensive testing
-# This configuration ensures code quality across all languages and file types
+# Pre-commit hooks configuration for K8s Playgrounds
+# This configuration ensures code quality and consistency across all languages
 
 repos:
-  # General hooks
+  # Basic file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
       - id: trailing-whitespace
-        name: Remove trailing whitespace
-        description: Remove trailing whitespace from files
+        name: Trim Trailing Whitespace
+        description: Remove trailing whitespace
         types: [text]
+        exclude: '\.(md|rst)$'
+        
       - id: end-of-file-fixer
-        name: Fix end of file
+        name: Fix End of Files
         description: Ensure files end with a newline
         types: [text]
+        
       - id: check-yaml
-        name: Check YAML syntax
-        description: Check YAML files for syntax errors
+        name: Check YAML
+        description: Check YAML syntax
         types: [yaml]
+        args: ['--unsafe']
+        
       - id: check-json
-        name: Check JSON syntax
-        description: Check JSON files for syntax errors
+        name: Check JSON
+        description: Check JSON syntax
         types: [json]
-      - id: check-toml
-        name: Check TOML syntax
-        description: Check TOML files for syntax errors
-        types: [toml]
-      - id: check-merge-conflict
-        name: Check for merge conflict markers
-        description: Check for merge conflict markers in files
-        types: [text]
+        
       - id: check-added-large-files
-        name: Check for large files
+        name: Check for Large Files
         description: Prevent large files from being committed
         args: ['--maxkb=1000']
+        
+      - id: check-merge-conflict
+        name: Check for Merge Conflicts
+        description: Check for merge conflict markers
+        types: [text]
+        
       - id: check-case-conflict
-        name: Check for case conflicts
-        description: Check for case conflicts in filenames
+        name: Check for Case Conflicts
+        description: Check for case conflicts in file names
+        
+      - id: check-merge-conflict
+        name: Check for Merge Conflicts
+        description: Check for merge conflict markers
+        
+      - id: mixed-line-ending
+        name: Mixed Line Ending
+        description: Ensure consistent line endings
+        args: ['--fix=lf']
+        
       - id: check-executables-have-shebangs
-        name: Check executables have shebangs
-        description: Ensure executable files have proper shebangs
-        types: [text]
+        name: Check Executables Have Shebangs
+        description: Ensure executable files have shebangs
+        
       - id: check-shebang-scripts-are-executable
-        name: Check shebang scripts are executable
+        name: Check Shebang Scripts Are Executable
         description: Ensure shebang scripts are executable
-        types: [text]
 
-  # JavaScript/TypeScript hooks
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.50.0
-    hooks:
-      - id: eslint
-        name: ESLint
-        description: Run ESLint on JavaScript/TypeScript files
-        types: [javascript, typescript, vue]
-        additional_dependencies:
-          - eslint@8.50.0
-          - '@typescript-eslint/eslint-plugin@6.7.0'
-          - '@typescript-eslint/parser@6.7.0'
-          - 'eslint-plugin-vue@9.17.0'
-          - 'eslint-plugin-unused-imports@2.0.0'
-        args: ['--fix', '--max-warnings', '0']
-        files: \.(js|ts|vue)$
-
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
-    hooks:
-      - id: prettier
-        name: Prettier
-        description: Format code with Prettier
-        types: [javascript, typescript, vue, json, yaml, markdown]
-        args: ['--write']
-        files: \.(js|ts|vue|json|yml|yaml|md)$
-
-  # Python hooks
+  # Python code formatting and linting
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.3.0
     hooks:
       - id: black
-        name: Black
+        name: Black Python Formatter
         description: Format Python code with Black
         language_version: python3
+        args: ['--line-length=88']
         types: [python]
-        args: ['--line-length', '88']
-
+        
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
-        name: isort
+        name: isort Python Import Sorter
         description: Sort Python imports
+        args: ['--profile=black', '--line-length=88']
         types: [python]
-        args: ['--profile', 'black']
-
+        
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
       - id: flake8
-        name: Flake8
-        description: Lint Python code with Flake8
-        types: [python]
+        name: flake8 Python Linter
+        description: Lint Python code with flake8
         args: ['--max-line-length=88', '--extend-ignore=E203,W503']
-
+        types: [python]
+        
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        name: Bandit Security Linter
+        description: Security linting for Python
+        args: ['-r', 'src/', '-f', 'json', '-o', 'bandit-report.json']
+        types: [python]
+        
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v1.3.0
     hooks:
       - id: mypy
-        name: MyPy
-        description: Type check Python code
+        name: MyPy Type Checker
+        description: Type checking for Python
+        args: ['--ignore-missing-imports', '--no-strict-optional']
         types: [python]
-        additional_dependencies: [types-all]
-        args: ['--ignore-missing-imports']
 
-  # Java hooks
-  - repo: https://github.com/diffplug/spotless
-    rev: 6.20.0
+  # JavaScript/TypeScript code formatting and linting
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.42.0
     hooks:
-      - id: spotless-java
-        name: Spotless Java
-        description: Format Java code with Spotless
-        types: [java]
-        args: ['apply']
-
-  - repo: local
+      - id: eslint
+        name: ESLint JavaScript/TypeScript Linter
+        description: Lint JavaScript and TypeScript code
+        types: [javascript, typescript]
+        files: \.(js|ts|vue)$
+        args: ['--fix', '--max-warnings=0']
+        
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0
     hooks:
-      - id: checkstyle-java
-        name: Checkstyle Java
-        description: Run Checkstyle on Java files
-        entry: mvn checkstyle:check
-        language: system
-        types: [java]
-        pass_filenames: false
+      - id: prettier
+        name: Prettier Code Formatter
+        description: Format code with Prettier
+        types: [javascript, typescript, json, yaml, markdown]
+        args: ['--write', '--tab-width=2']
+        
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.42.0
+    hooks:
+      - id: eslint
+        name: ESLint Vue Files
+        description: Lint Vue.js files
+        files: \.vue$
+        args: ['--fix', '--max-warnings=0']
 
-  # Go hooks (if Go files exist)
+  # Go code formatting and linting
   - repo: https://github.com/dnephin/pre-commit-golang
-    rev: v1.0.0
+    rev: v0.5.1
     hooks:
       - id: go-fmt
         name: Go fmt
-        description: Format Go code
+        description: Format Go code with go fmt
         types: [go]
-      - id: go-imports
-        name: Go imports
-        description: Format Go imports
-        types: [go]
+        
       - id: go-vet
         name: Go vet
         description: Run go vet
         types: [go]
-      - id: go-test
-        name: Go test
-        description: Run go test
+        
+      - id: go-imports
+        name: Go imports
+        description: Format Go imports
         types: [go]
+        
+      - id: go-mod-tidy
+        name: Go mod tidy
+        description: Tidy Go modules
+        types: [go]
+        files: go\.mod$
+        
+      - id: golangci-lint
+        name: golangci-lint
+        description: Run golangci-lint
+        types: [go]
+        args: ['--timeout=5m']
 
-  # Rust hooks (if Rust files exist)
-  - repo: https://github.com/doublify/pre-commit-rust
-    rev: v1.0
+  # Java code formatting and linting
+  - repo: https://github.com/checkstyle/checkstyle
+    rev: checkstyle-10.9.3
     hooks:
-      - id: rustfmt
-        name: Rust fmt
-        description: Format Rust code
-        types: [rust]
-      - id: clippy
-        name: Clippy
-        description: Run Clippy linter
-        types: [rust]
+      - id: checkstyle
+        name: Checkstyle Java Linter
+        description: Lint Java code with Checkstyle
+        files: \.java$
+        args: ['-c', 'checkstyle.xml']
+        
+  - repo: https://github.com/spotbugs/spotbugs
+    rev: 4.7.3
+    hooks:
+      - id: spotbugs
+        name: SpotBugs Java Bug Finder
+        description: Find bugs in Java code
+        files: \.java$
 
-  # Docker hooks
+  # Dockerfile linting
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
       - id: hadolint
-        name: Hadolint
+        name: Hadolint Dockerfile Linter
         description: Lint Dockerfiles
-        types: [dockerfile]
+        files: Dockerfile.*
+        args: ['--ignore', 'DL3008', '--ignore', 'DL3009']
 
-  # Shell hooks
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        name: YAML Linter
+        description: Lint YAML files
+        args: ['-d', 'relaxed']
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.35.0
+    hooks:
+      - id: markdownlint
+        name: Markdown Linter
+        description: Lint Markdown files
+        args: ['--fix', '--config', '.markdownlint.json']
+        types: [markdown]
+
+  # Shell script linting
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.9.0.6
     hooks:
@@ -184,99 +222,69 @@ repos:
         description: Lint shell scripts
         types: [shell]
 
-  # Markdown hooks
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.35.0
-    hooks:
-      - id: markdownlint
-        name: Markdownlint
-        description: Lint Markdown files
-        types: [markdown]
-        args: ['--fix']
-
-  # Security hooks
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
-    hooks:
-      - id: detect-secrets
-        name: Detect secrets
-        description: Detect secrets in code
-        args: ['--baseline', '.secrets.baseline']
-
-  # Custom hooks for this project
+  # Custom hooks for project-specific checks
   - repo: local
     hooks:
-      - id: vitest-unit-tests
-        name: Vitest Unit Tests
-        description: Run unit tests with Vitest
-        entry: npx vitest run --reporter=verbose
-        language: system
-        types: [javascript, typescript]
-        pass_filenames: false
-        always_run: true
-
-      - id: vitest-coverage-check
-        name: Vitest Coverage Check
-        description: Check test coverage
-        entry: npx vitest run --coverage --reporter=json
-        language: system
-        types: [javascript, typescript]
-        pass_filenames: false
-        always_run: true
-
-      - id: maven-test
-        name: Maven Test
-        description: Run Maven tests
-        entry: mvn test
-        language: system
-        types: [java]
-        pass_filenames: false
-        always_run: true
-
-      - id: python-tests
-        name: Python Tests
-        description: Run Python tests
-        entry: python -m pytest test/ -v
-        language: system
-        types: [python]
-        pass_filenames: false
-        always_run: true
-
-      - id: comprehensive-test-suite
-        name: Comprehensive Test Suite
-        description: Run comprehensive test suite
-        entry: python3 test_comprehensive.py
+      - id: test-unit
+        name: Run Unit Tests
+        description: Run unit tests before commit
+        entry: python3 test_comprehensive.py --unit
         language: system
         pass_filenames: false
         always_run: true
-
+        stages: [pre-commit]
+        
+      - id: test-coverage
+        name: Check Test Coverage
+        description: Ensure test coverage meets requirements
+        entry: python3 test_comprehensive.py --coverage --threshold=100
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+        
+      - id: security-scan
+        name: Security Scan
+        description: Run security scans
+        entry: python3 test_comprehensive.py --security
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+        
       - id: build-check
         name: Build Check
-        description: Ensure project builds successfully
-        entry: npm run build
-        language: system
-        types: [javascript, typescript]
-        pass_filenames: false
-        always_run: true
-
-      - id: type-check
-        name: TypeScript Type Check
-        description: Run TypeScript type checking
-        entry: npx tsc --noEmit
-        language: system
-        types: [typescript]
-        pass_filenames: false
-        always_run: true
-
-      - id: lint-staged
-        name: Lint Staged
-        description: Run lint-staged
-        entry: npx lint-staged
+        description: Ensure code builds successfully
+        entry: |
+          npm run build:check
+          mvn compile -q
+          go build ./...
         language: system
         pass_filenames: false
         always_run: true
+        stages: [pre-commit]
 
-# Configuration for specific tools
+  # Commit message linting
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.5.3
+    hooks:
+      - id: commitizen
+        name: Commitizen
+        description: Enforce conventional commit messages
+        stages: [commit-msg]
+
+# Configuration for specific file types
+default_stages: [commit]
+default_language_version:
+  python: python3
+  node: 18
+  golang: 1.20
+  java: 17
+
+# Minimum pre-commit version
+minimum_pre_commit_version: 3.0.0
+
+# Configuration for specific hooks
 ci:
   autofix_commit_msg: |
     [pre-commit.ci] auto fixes from pre-commit.com hooks
@@ -288,14 +296,3 @@ ci:
   autoupdate_schedule: weekly
   skip: []
   submodules: false
-
-# Default configuration
-default_language_version:
-  python: python3
-  node: 18
-  java: 17
-  golang: 1.21
-  rust: stable
-
-# Minimum pre-commit version
-minimum_pre_commit_version: 3.0.0

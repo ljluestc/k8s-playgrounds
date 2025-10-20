@@ -1,0 +1,424 @@
+# Advanced Headless Service with iptables Proxy Mode
+# This example demonstrates:
+# 1. Multiple Headless Services
+# 2. iptables proxy configuration
+# 3. Service discovery patterns
+# 4. Load balancing strategies
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-headless
+  namespace: production
+  labels:
+    app: web
+    tier: frontend
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: 'true'
+    example.com/headless: 'true'
+    example.com/iptables-proxy: enabled
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 8443
+      protocol: TCP
+  selector:
+    app: web
+    tier: frontend
+  sessionAffinity: None
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-headless
+  namespace: production
+  labels:
+    app: api
+    tier: backend
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: 'true'
+    example.com/headless: 'true'
+    example.com/iptables-proxy: enabled
+spec:
+  clusterIP: None
+  ports:
+    - name: grpc
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+    - name: rest
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: api
+    tier: backend
+  sessionAffinity: None
+
+---
+# StatefulSet for web frontend
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web-frontend
+  namespace: production
+spec:
+  serviceName: web-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: web
+        tier: frontend
+    spec:
+      serviceAccountName: web-sa
+      containers:
+        - name: nginx
+          image: nginx:1.21
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICE_NAME
+              value: web-headless
+            - name: NAMESPACE
+              value: production
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+            - name: nginx-certs
+              mountPath: /etc/nginx/certs
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-headless-config
+        - name: nginx-certs
+          secret:
+            secretName: nginx-tls
+  volumeClaimTemplates:
+    - metadata:
+        name: nginx-logs
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+# StatefulSet for API backend
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: api-backend
+  namespace: production
+spec:
+  serviceName: api-headless
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: api
+        tier: backend
+    spec:
+      serviceAccountName: api-sa
+      containers:
+        - name: api-server
+          image: api-server:latest
+          ports:
+            - name: grpc
+              containerPort: 9090
+            - name: rest
+              containerPort: 8080
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICE_NAME
+              value: api-headless
+            - name: NAMESPACE
+              value: production
+            - name: DISCOVERY_MODE
+              value: dns
+          volumeMounts:
+            - name: api-config
+              mountPath: /etc/api
+            - name: api-logs
+              mountPath: /var/log/api
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: rest
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: rest
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: api-config
+          configMap:
+            name: api-headless-config
+        - name: api-logs
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: api-data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+# ConfigMap for nginx with Headless Service discovery
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-headless-config
+  namespace: production
+data:
+  default.conf: |
+    upstream web_backend {
+        # DNS resolution to individual pod IPs
+        server web-frontend-0.web-headless.production.svc.cluster.local:8080;
+        server web-frontend-1.web-headless.production.svc.cluster.local:8080;
+        server web-frontend-2.web-headless.production.svc.cluster.local:8080;
+    }
+
+    upstream api_backend {
+        # DNS resolution to individual pod IPs
+        server api-backend-0.api-headless.production.svc.cluster.local:8080;
+        server api-backend-1.api-headless.production.svc.cluster.local:8080;
+    }
+
+    server {
+        listen 8080;
+        server_name _;
+
+        location / {
+            proxy_pass http://web_backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /api/ {
+            proxy_pass http://api_backend/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+
+        location /ready {
+            access_log off;
+            return 200 "ready\n";
+            add_header Content-Type text/plain;
+        }
+    }
+
+---
+# ConfigMap for API server with service discovery
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-headless-config
+  namespace: production
+data:
+  config.yaml: |
+    server:
+      grpc_port: 9090
+      http_port: 8080
+      host: "0.0.0.0"
+
+    discovery:
+      type: "dns"
+      services:
+        - name: "web-headless"
+          namespace: "production"
+          port: 8080
+        - name: "api-headless"
+          namespace: "production"
+          port: 8080
+
+    load_balancing:
+      algorithm: "round_robin"
+      health_check_interval: "30s"
+      max_retries: 3
+
+    logging:
+      level: "info"
+      format: "json"
+      output: "/var/log/api/app.log"
+
+---
+# Service Account for web frontend
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: web-sa
+  namespace: production
+
+---
+# Service Account for API backend
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: api-sa
+  namespace: production
+
+---
+# Role for service discovery
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: headless-discovery-role
+  namespace: production
+rules:
+  - apiGroups: ['']
+    resources: [endpoints, services, pods]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [statefulsets]
+    verbs: [get, list, watch]
+
+---
+# RoleBinding for web frontend
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: web-discovery-binding
+  namespace: production
+subjects:
+  - kind: ServiceAccount
+    name: web-sa
+    namespace: production
+roleRef:
+  kind: Role
+  name: headless-discovery-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# RoleBinding for API backend
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: api-discovery-binding
+  namespace: production
+subjects:
+  - kind: ServiceAccount
+    name: api-sa
+    namespace: production
+roleRef:
+  kind: Role
+  name: headless-discovery-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# NetworkPolicy for Headless Services
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: headless-services-policy
+  namespace: production
+spec:
+  podSelector:
+    matchLabels:
+      app: web
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: production
+        - podSelector:
+            matchLabels:
+              app: api
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8443
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: api
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 9090
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53

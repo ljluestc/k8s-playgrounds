@@ -5,7 +5,7 @@ import {
   Get,
   Injectable,
   Param,
-  Post
+  Post,
 } from '@nestjs/common'
 
 @Injectable()

@@ -167,11 +167,12 @@ describe('TypeaheadSystem', () => {
     })
 
     it('should perform case-sensitive search when enabled', () => {
-      const freshTypeahead = new TypeaheadSystem({ caseSensitive: true })
-
-      // Clear all items and add only our test items
-      freshTypeahead.destroy()
-      const cleanTypeahead = new TypeaheadSystem({ caseSensitive: true })
+      // Create a clean typeahead without default data
+      const cleanTypeahead = new TypeaheadSystem({
+        caseSensitive: true,
+        fuzzyMatch: false,
+        initializeDefaultData: false,
+      })
 
       // Add items with different cases
       cleanTypeahead.addItem({ text: 'APPLE', value: 'apple-upper' })

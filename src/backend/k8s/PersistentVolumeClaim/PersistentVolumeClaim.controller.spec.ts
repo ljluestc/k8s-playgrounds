@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { PersistentVolumeClaimController } from './PersistentVolumeClaim.controller'
 import { createMockK8sService } from '../../../../test/utils/k8s-mocks'
+import { PersistentVolumeClaimController } from './PersistentVolumeClaim.controller'
 
 describe('PersistentVolumeClaimController', () => {
   let controller: PersistentVolumeClaimController

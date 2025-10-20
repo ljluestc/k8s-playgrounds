@@ -1,0 +1,21 @@
+
+K8s Playgrounds Test Summary
+============================
+
+Generated: 2025-10-20T00:54:48.298547
+Duration: 47.62 seconds
+
+Test Results:
+- Total Tests: 19
+- Passed: 8
+- Failed: 9
+- Errors: 2
+- Skipped: 0
+- Success Rate: 42.1%
+- Average Coverage: 0.0%
+
+Performance Analysis:
+- Overall Performance: good
+
+Recommendations:
+- Fix 2 test errors

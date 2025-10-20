@@ -1,0 +1,895 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites name="K8s Playgrounds Tests" tests="19" failures="9" errors="2" time="47.621065616607666"><testsuite name="Integration Tests" tests="1" failures="1" errors="0" time="0.0922708511352539"><testcase name="Integration Tests" time="0.0922708511352539"><failure message="Integration Tests failed with return code 1">npm error Missing script: "test:integration"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /home/calelin/.npm/_logs/2025-10-20T07_54_00_727Z-debug-0.log
+</failure></testcase></testsuite><testsuite name="Performance Tests" tests="1" failures="1" errors="0" time="0.09575581550598145"><testcase name="Performance Tests" time="0.09575581550598145"><failure message="Performance Tests failed with return code 1">npm error Missing script: "test:performance"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /home/calelin/.npm/_logs/2025-10-20T07_54_00_813Z-debug-0.log
+</failure></testcase></testsuite><testsuite name="Java Unit Tests" tests="1" failures="0" errors="1" time="0.0005552768707275391"><testcase name="Java Unit Tests" time="0.0005552768707275391"><failure message="Java Unit Tests failed with exception: [Errno 2] No such file or directory: 'mvn'">[Errno 2] No such file or directory: 'mvn'</failure></testcase></testsuite><testsuite name="Java Integration Tests" tests="1" failures="0" errors="1" time="0.0001678466796875"><testcase name="Java Integration Tests" time="0.0001678466796875"><failure message="Java Integration Tests failed with exception: [Errno 2] No such file or directory: 'mvn'">[Errno 2] No such file or directory: 'mvn'</failure></testcase></testsuite><testsuite name="Go Unit Tests" tests="1" failures="1" errors="0" time="0.0047397613525390625"><testcase name="Go Unit Tests" time="0.0047397613525390625"><failure message="Go Unit Tests failed with return code 1">pattern ./operator/...: directory prefix operator does not contain main module or its selected dependencies
+</failure></testcase></testsuite><testsuite name="Go Integration Tests" tests="1" failures="1" errors="0" time="0.005189180374145508"><testcase name="Go Integration Tests" time="0.005189180374145508"><failure message="Go Integration Tests failed with return code 1">pattern ./operator/...: directory prefix operator does not contain main module or its selected dependencies
+</failure></testcase></testsuite><testsuite name="E2E Tests" tests="1" failures="1" errors="0" time="2.0083398818969727"><testcase name="E2E Tests" time="2.0083398818969727"><failure message="E2E Tests failed with return code 1">[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/e2e/pod.e2e.spec.ts &gt; Pod E2E Tests &gt; GET /k8s/Pod/list &gt; should return list of all pods
+ FAIL  test/e2e/pod.e2e.spec.ts &gt; Pod E2E Tests &gt; GET /k8s/Pod/list &gt; should return 200 even with empty pod list
+ FAIL  test/e2e/pod.e2e.spec.ts &gt; Pod E2E Tests &gt; GET /k8s/Pod/list/ns/:ns &gt; should return pods from specific namespace
+ FAIL  test/e2e/pod.e2e.spec.ts &gt; Pod E2E Tests &gt; GET /k8s/Pod/list/ns/:ns &gt; should handle invalid namespace
+{
+  stack: 'AggregateError: \n' +
+    '    at internalConnectMultiple (node:net:1122:18)\n' +
+    '    at afterConnectMultiple (node:net:1689:7)',
+  errors: [
+    {
+      stack: 'Error: connect ECONNREFUSED ::1:3007\n' +
+        '    at createConnectionError (node:net:1652:14)\n' +
+        '    at afterConnectMultiple (node:net:1682:16)',
+      message: 'connect ECONNREFUSED ::1:3007',
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '::1',
+      port: 3007,
+      constructor: 'Function&lt;Error&gt;',
+      name: 'Error',
+      toString: 'Function&lt;toString&gt;'
+    },
+    {
+      stack: 'Error: connect ECONNREFUSED 127.0.0.1:3007\n' +
+        '    at createConnectionError (node:net:1652:14)\n' +
+        '    at afterConnectMultiple (node:net:1682:16)',
+      message: 'connect ECONNREFUSED 127.0.0.1:3007',
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 3007,
+      constructor: 'Function&lt;Error&gt;',
+      name: 'Error',
+      toString: 'Function&lt;toString&gt;'
+    }
+  ],
+  code: 'ECONNREFUSED',
+  response: undefined,
+  stackStr: 'AggregateError: \n' +
+    '    at internalConnectMultiple (node:net:1122:18)\n' +
+    '    at afterConnectMultiple (node:net:1689:7)',
+  nameStr: 'AggregateError',
+  expected: 'undefined',
+  actual: 'undefined',
+  message: '',
+  constructor: 'Function&lt;AggregateError&gt;',
+  name: 'AggregateError',
+  toString: 'Function&lt;toString&gt;',
+  stacks: [
+    {
+      method: 'internalConnectMultiple',
+      file: '/home/calelin/dev/k8s-playgrounds/node:net',
+      line: 1122,
+      column: 18
+    },
+    {
+      method: 'afterConnectMultiple',
+      file: '/home/calelin/dev/k8s-playgrounds/node:net',
+      line: 1689,
+      column: 7
+    }
+  ]
+}
+ ❯ internalConnectMultiple node:net:1122:18
+ ❯ afterConnectMultiple node:net:1689:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { errors: [ { stack: 'Error: connect ECONNREFUSED ::1:3007\n    at createConnectionError (node:net:1652:14)\n    at afterConnectMultiple (node:net:1682:16)', message: 'connect ECONNREFUSED ::1:3007', errno: -111, code: 'ECONNREFUSED', syscall: 'connect', address: '::1', port: 3007, constructor: 'Function&lt;Error&gt;', name: 'Error', toString: 'Function&lt;toString&gt;' }, { stack: 'Error: connect ECONNREFUSED 127.0.0.1:3007\n    at createConnectionError (node:net:1652:14)\n    at afterConnectMultiple (node:net:1682:16)', message: 'connect ECONNREFUSED 127.0.0.1:3007', errno: -111, code: 'ECONNREFUSED', syscall: 'connect', address: '127.0.0.1', port: 3007, constructor: 'Function&lt;Error&gt;', name: 'Error', toString: 'Function&lt;toString&gt;' } ], code: 'ECONNREFUSED', response: undefined }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+</failure></testcase></testsuite><testsuite name="Frontend Unit Tests" tests="1" failures="1" errors="0" time="2.645935535430908"><testcase name="Frontend Unit Tests" time="2.645935535430908"><failure message="Frontend Unit Tests failed with return code 1">[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/frontend/components/pod/PodListView.spec.ts [ src/frontend/components/pod/PodListView.spec.ts ]
+TypeError: Cannot set properties of undefined (setting 'stubs')
+ ❯ test/setup-frontend.ts:5:19
+      3| 
+      4| // Configure Vue Test Utils
+      5| config.globalThis.stubs = {
+       |                   ^
+      6|   'teleport': true,
+      7|   'n-config-provider': true,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+</failure></testcase></testsuite><testsuite name="TinyURL System Tests" tests="1" failures="0" errors="0" time="2.868563652038574"><testcase name="TinyURL System Tests" time="2.868563652038574" /></testsuite><testsuite name="Newsfeed System Tests" tests="1" failures="0" errors="0" time="4.0356667041778564"><testcase name="Newsfeed System Tests" time="4.0356667041778564" /></testsuite><testsuite name="Google Docs System Tests" tests="1" failures="0" errors="0" time="4.03669548034668"><testcase name="Google Docs System Tests" time="4.03669548034668" /></testsuite><testsuite name="Quora System Tests" tests="1" failures="0" errors="0" time="3.8467659950256348"><testcase name="Quora System Tests" time="3.8467659950256348" /></testsuite><testsuite name="Monitoring System Tests" tests="1" failures="0" errors="0" time="3.272303819656372"><testcase name="Monitoring System Tests" time="3.272303819656372" /></testsuite><testsuite name="Load Balancer System Tests" tests="1" failures="1" errors="0" time="5.88570237159729"><testcase name="Load Balancer System Tests" time="5.88570237159729"><failure message="Load Balancer System Tests failed with return code 1">[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Request failed
+ ❯ systems/load-balancer-system/load-balancer.test.ts:505:62
+    503|         })
+    504| 
+    505|         const mockRequestHandler = vi.fn().mockRejectedValue(new Error…
+       |                                                              ^
+    506|         loadBalancer.handleRequest('client1', 'test-request', mockRequ…
+    507|       })
+ ❯ systems/load-balancer-system/load-balancer.test.ts:497:14
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+
+This error originated in "systems/load-balancer-system/load-balancer.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "should emit circuit breaker opened event". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Always fails
+ ❯ systems/load-balancer-system/load-balancer.test.ts:525:62
+    523|         })
+    524| 
+    525|         const mockRequestHandler = vi.fn().mockRejectedValue(new Error…
+       |                                                              ^
+    526|         loadBalancer.handleRequest('client1', 'test-request', mockRequ…
+    527|       })
+ ❯ systems/load-balancer-system/load-balancer.test.ts:511:14
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+
+This error originated in "systems/load-balancer-system/load-balancer.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "should handle server health changes". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+</failure></testcase></testsuite><testsuite name="Backend Unit Tests" tests="1" failures="1" errors="0" time="11.9327712059021"><testcase name="Backend Unit Tests" time="11.9327712059021"><failure message="Backend Unit Tests failed with return code 1">[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/secret/secret.controller.spec.ts:421:32
+    419|       vi.spyOn(k8sService.secretService, 'Delete')
+    420|         .mockResolvedValueOnce(undefined)
+    421|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    422|         .mockResolvedValueOnce(undefined)
+    423| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/secret/secret.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/PersistentVolume/PersistentVolume.controller.spec.ts:451:32
+    449|       vi.spyOn(persistentVolumeService, 'Delete')
+    450|         .mockResolvedValueOnce(undefined)
+    451|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    452|         .mockResolvedValueOnce(undefined)
+    453| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/PersistentVolume/PersistentVolume.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/PersistentVolume/PersistentVolume.controller.spec.ts:499:21
+    497| 
+    498|     it('should handle deletion errors', async () =&gt; {
+    499|       const error = new Error('Delete failed')
+       |                     ^
+    500|       vi.spyOn(persistentVolumeService, 'Delete').mockRejectedValue(er…
+    501| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/PersistentVolume/PersistentVolume.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Forbidden: User cannot delete PersistentVolume
+ ❯ src/backend/k8s/PersistentVolume/PersistentVolume.controller.spec.ts:511:21
+    509| 
+    510|     it('should handle permission errors during deletion', async () =&gt; {
+    511|       const error = new Error('Forbidden: User cannot delete Persisten…
+       |                     ^
+    512|       vi.spyOn(persistentVolumeService, 'Delete').mockRejectedValue(er…
+    513| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/PersistentVolume/PersistentVolume.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/configmap/configmap.controller.spec.ts:212:32
+    210|       vi.spyOn(k8sService.configMapService, 'Delete')
+    211|         .mockResolvedValueOnce(undefined)
+    212|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    213|         .mockResolvedValueOnce(undefined)
+    214| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/configmap/configmap.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/ingress/ingress.controller.spec.ts:312:32
+    310|       vi.spyOn(k8sService.ingressService, 'Delete')
+    311|         .mockResolvedValueOnce(undefined)
+    312|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    313|         .mockResolvedValueOnce(undefined)
+    314| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ingress/ingress.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Ingress not found
+ ❯ src/backend/k8s/ingress/ingress.controller.spec.ts:369:32
+    367|       vi.spyOn(k8sService.ingressService, 'Delete')
+    368|         .mockResolvedValueOnce(undefined)
+    369|         .mockRejectedValueOnce(new Error('Ingress not found'))
+       |                                ^
+    370| 
+    371|       const nsn = ['default/existing-ingress', 'default/nonexistent-in…
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ingress/ingress.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/ns/ns.controller.spec.ts:274:32
+    272|       vi.spyOn(k8sService.nsService, 'Delete')
+    273|         .mockResolvedValueOnce(undefined)
+    274|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    275|         .mockResolvedValueOnce(undefined)
+    276| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ns/ns.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Forbidden: User cannot delete namespaces
+ ❯ src/backend/k8s/ns/ns.controller.spec.ts:331:21
+    329| 
+    330|     it('should handle permission errors during deletion', async () =&gt; {
+    331|       const error = new Error('Forbidden: User cannot delete namespace…
+       |                     ^
+    332|       vi.spyOn(k8sService.nsService, 'Delete').mockRejectedValue(error)
+    333| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ns/ns.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Namespace is already being deleted
+ ❯ src/backend/k8s/ns/ns.controller.spec.ts:343:21
+    341| 
+    342|     it('should handle deletion of terminating namespace', async () =&gt; {
+    343|       const error = new Error('Namespace is already being deleted')
+       |                     ^
+    344|       vi.spyOn(k8sService.nsService, 'Delete').mockRejectedValue(error)
+    345| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ns/ns.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/networkPolicy/NetworkPolicy.controller.spec.ts:274:32
+    272|       k8sService.networkPolicyService.Delete
+    273|         .mockResolvedValueOnce(undefined)
+    274|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    275|         .mockResolvedValueOnce(undefined)
+    276| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/networkPolicy/NetworkPolicy.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/ClusterRoleBinding/ClusterRoleBinding.controller.spec.ts:240:32
+    238|       vi.spyOn(k8sService.clusterRoleBindingService, 'Delete')
+    239|         .mockResolvedValueOnce(undefined)
+    240|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    241|         .mockResolvedValueOnce(undefined)
+    242| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ClusterRoleBinding/ClusterRoleBinding.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Forbidden: insufficient permissions
+ ❯ src/backend/k8s/ClusterRoleBinding/ClusterRoleBinding.controller.spec.ts:289:21
+    287| 
+    288|     it('should handle permission denied errors', async () =&gt; {
+    289|       const error = new Error('Forbidden: insufficient permissions')
+       |                     ^
+    290|       vi.spyOn(k8sService.clusterRoleBindingService, 'Delete').mockRej…
+    291| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ClusterRoleBinding/ClusterRoleBinding.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/storageClass/StorageClass.controller.spec.ts:323:32
+    321|       vi.spyOn(k8sService.storageClassService, 'Delete')
+    322|         .mockResolvedValueOnce(undefined)
+    323|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    324|         .mockResolvedValueOnce(undefined)
+    325| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/storageClass/StorageClass.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/horizontalpodautoscaler/HorizontalPodAutoscaler.controller.spec.ts:334:32
+    332|       vi.spyOn(k8sService.horizontalPodAutoscalerService, 'Delete')
+    333|         .mockResolvedValueOnce(undefined)
+    334|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    335|         .mockResolvedValueOnce(undefined)
+    336| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/horizontalpodautoscaler/HorizontalPodAutoscaler.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/RoleBinding/RoleBinding.controller.spec.ts:287:32
+    285|       vi.spyOn(k8sService.roleBindingService, 'Delete')
+    286|         .mockResolvedValueOnce(undefined)
+    287|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    288|         .mockResolvedValueOnce(undefined)
+    289| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/RoleBinding/RoleBinding.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/daemonset/daemonset.controller.spec.ts:179:32
+    177|       vi.spyOn(k8sService.daemonSetService, 'Delete')
+    178|         .mockResolvedValueOnce(undefined)
+    179|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    180|         .mockResolvedValueOnce(undefined)
+    181| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/daemonset/daemonset.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/ServiceAccount/ServiceAccount.controller.spec.ts:252:32
+    250|       vi.spyOn(k8sService.serviceAccountService, 'Delete')
+    251|         .mockResolvedValueOnce(undefined)
+    252|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    253|         .mockResolvedValueOnce(undefined)
+    254| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ServiceAccount/ServiceAccount.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Service account is in use
+ ❯ src/backend/k8s/ServiceAccount/ServiceAccount.controller.spec.ts:292:28
+    290|     it('should handle deletion errors gracefully', async () =&gt; {
+    291|       vi.spyOn(k8sService.serviceAccountService, 'Delete')
+    292|         .mockRejectedValue(new Error('Service account is in use'))
+       |                            ^
+    293| 
+    294|       const nsn = ['default/test-sa']
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ServiceAccount/ServiceAccount.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/replicaset/replicaset.controller.spec.ts:280:32
+    278|       vi.spyOn(k8sService.replicaSetService, 'Delete')
+    279|         .mockResolvedValueOnce(undefined)
+    280|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    281|         .mockResolvedValueOnce(undefined)
+    282| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/replicaset/replicaset.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Not found
+ ❯ src/backend/k8s/replicaset/replicaset.controller.spec.ts:348:32
+    346|       vi.spyOn(k8sService.replicaSetService, 'Delete')
+    347|         .mockResolvedValueOnce(undefined)
+    348|         .mockRejectedValueOnce(new Error('Not found'))
+       |                                ^
+    349|         .mockResolvedValueOnce(undefined)
+    350|         .mockRejectedValueOnce(new Error('Permission denied'))
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/replicaset/replicaset.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Permission denied
+ ❯ src/backend/k8s/replicaset/replicaset.controller.spec.ts:350:32
+    348|         .mockRejectedValueOnce(new Error('Not found'))
+    349|         .mockResolvedValueOnce(undefined)
+    350|         .mockRejectedValueOnce(new Error('Permission denied'))
+       |                                ^
+    351|         .mockResolvedValueOnce(undefined)
+    352| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/replicaset/replicaset.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/PersistentVolumeClaim/PersistentVolumeClaim.controller.spec.ts:303:32
+    301|       vi.spyOn(k8sService.persistentVolumeClaimService, 'Delete')
+    302|         .mockResolvedValueOnce(undefined)
+    303|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    304|         .mockResolvedValueOnce(undefined)
+    305| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/PersistentVolumeClaim/PersistentVolumeClaim.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: PVC in use
+ ❯ src/backend/k8s/PersistentVolumeClaim/PersistentVolumeClaim.controller.spec.ts:350:32
+    348|     it('should handle deletion errors gracefully', async () =&gt; {
+    349|       vi.spyOn(k8sService.persistentVolumeClaimService, 'Delete')
+    350|         .mockRejectedValueOnce(new Error('PVC in use'))
+       |                                ^
+    351|         .mockResolvedValueOnce(undefined)
+    352| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/PersistentVolumeClaim/PersistentVolumeClaim.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/statefulset/statefulset.controller.spec.ts:185:32
+    183|       vi.spyOn(k8sService.statefulSetService, 'Delete')
+    184|         .mockResolvedValueOnce(undefined)
+    185|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    186|         .mockResolvedValueOnce(undefined)
+    187| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/statefulset/statefulset.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/cronjob/cronjob.controller.spec.ts:159:32
+    157|       vi.spyOn(k8sService.cronJobService, 'Delete')
+    158|         .mockResolvedValueOnce(undefined)
+    159|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    160|         .mockResolvedValueOnce(undefined)
+    161| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/cronjob/cronjob.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/ClusterRole/ClusterRole.controller.spec.ts:239:32
+    237|       vi.spyOn(k8sService.clusterRoleService, 'Delete')
+    238|         .mockResolvedValueOnce(undefined)
+    239|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    240|         .mockResolvedValueOnce(undefined)
+    241| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ClusterRole/ClusterRole.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Cannot delete system cluster role
+ ❯ src/backend/k8s/ClusterRole/ClusterRole.controller.spec.ts:287:21
+    285| 
+    286|     it('should handle protected cluster role deletion error', async ()…
+    287|       const error = new Error('Cannot delete system cluster role')
+       |                     ^
+    288|       vi.spyOn(k8sService.clusterRoleService, 'Delete').mockRejectedVa…
+    289| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ClusterRole/ClusterRole.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Forbidden: User cannot delete cluster roles
+ ❯ src/backend/k8s/ClusterRole/ClusterRole.controller.spec.ts:299:21
+    297| 
+    298|     it('should handle permission errors during deletion', async () =&gt; {
+    299|       const error = new Error('Forbidden: User cannot delete cluster r…
+       |                     ^
+    300|       vi.spyOn(k8sService.clusterRoleService, 'Delete').mockRejectedVa…
+    301| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/ClusterRole/ClusterRole.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/Role/Role.controller.spec.ts:272:32
+    270|       vi.spyOn(k8sService.roleService, 'Delete')
+    271|         .mockResolvedValueOnce(undefined)
+    272|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    273|         .mockResolvedValueOnce(undefined)
+    274| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/Role/Role.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Forbidden: User cannot delete roles
+ ❯ src/backend/k8s/Role/Role.controller.spec.ts:329:21
+    327| 
+    328|     it('should handle permission errors during deletion', async () =&gt; {
+    329|       const error = new Error('Forbidden: User cannot delete roles')
+       |                     ^
+    330|       vi.spyOn(k8sService.roleService, 'Delete').mockRejectedValue(err…
+    331| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/Role/Role.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Role not found
+ ❯ src/backend/k8s/Role/Role.controller.spec.ts:341:21
+    339| 
+    340|     it('should handle deletion of non-existent role', async () =&gt; {
+    341|       const error = new Error('Role not found')
+       |                     ^
+    342|       vi.spyOn(k8sService.roleService, 'Delete').mockRejectedValue(err…
+    343| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/Role/Role.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/service/NetworkSvc.controller.spec.ts:161:32
+    159|       vi.spyOn(networkSvcService, 'Delete')
+    160|         .mockResolvedValueOnce(undefined)
+    161|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    162|         .mockResolvedValueOnce(undefined)
+    163| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/service/NetworkSvc.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Delete failed
+ ❯ src/backend/k8s/job/job.controller.spec.ts:209:32
+    207|       vi.spyOn(k8sService.jobService, 'Delete')
+    208|         .mockResolvedValueOnce(undefined)
+    209|         .mockRejectedValueOnce(new Error('Delete failed'))
+       |                                ^
+    210|         .mockResolvedValueOnce(undefined)
+    211| 
+ ❯ node_modules/@vitest/runner/dist/index.js:135:14
+ ❯ node_modules/@vitest/runner/dist/index.js:60:26
+ ❯ runTest node_modules/@vitest/runner/dist/index.js:781:17
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runSuite node_modules/@vitest/runner/dist/index.js:909:15
+ ❯ runFiles node_modules/@vitest/runner/dist/index.js:958:5
+ ❯ startTests node_modules/@vitest/runner/dist/index.js:967:3
+ ❯ node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+
+This error originated in "src/backend/k8s/job/job.controller.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+
+</failure></testcase></testsuite><testsuite name="Messaging System Tests" tests="1" failures="0" errors="0" time="2.0050113201141357"><testcase name="Messaging System Tests" time="2.0050113201141357" /></testsuite><testsuite name="Typeahead System Tests" tests="1" failures="1" errors="0" time="7.872389554977417"><testcase name="Typeahead System Tests" time="7.872389554977417"><failure message="Typeahead System Tests failed with return code 1">[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  systems/typeahead-system/typeahead.test.ts &gt; TypeaheadSystem &gt; Search Functionality &gt; should perform case-sensitive search when enabled
+AssertionError: expected 7 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 7
+
+ ❯ systems/typeahead-system/typeahead.test.ts:183:36
+    181|       const result2 = cleanTypeahead.search('apple')
+    182| 
+    183|       expect(result1.items.length).toBe(1)
+       |                                    ^
+    184|       expect(result2.items.length).toBe(1)
+    185|       expect(result1.items[0].text).toBe('APPLE')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  systems/typeahead-system/typeahead.test.ts &gt; TypeaheadSystem &gt; Async Search &gt; should debounce multiple rapid searches
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+</failure></testcase></testsuite><testsuite name="DNS System Tests" tests="1" failures="0" errors="0" time="3.7725653648376465"><testcase name="DNS System Tests" time="3.7725653648376465" /></testsuite><testsuite name="Web Crawler System Tests" tests="1" failures="0" errors="0" time="35.68841862678528"><testcase name="Web Crawler System Tests" time="35.68841862678528" /></testsuite></testsuites>

@@ -1,0 +1,351 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-playgrounds-operator
+  labels:
+    name: k8s-playgrounds-operator
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-playgrounds-operator
+  namespace: k8s-playgrounds-operator
+  labels:
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8s-playgrounds-operator
+  labels:
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+rules:
+  # K8sPlaygroundsCluster permissions
+  - apiGroups: [k8s-playgrounds.io]
+    resources: [k8splaygroundsclusters, headlessservices]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [k8s-playgrounds.io]
+    resources: [k8splaygroundsclusters/status, headlessservices/status]
+    verbs: [get, update, patch]
+  - apiGroups: [k8s-playgrounds.io]
+    resources: [k8splaygroundsclusters/finalizers, headlessservices/finalizers]
+    verbs: [update]
+
+  # Core Kubernetes resources
+  - apiGroups: ['']
+    resources: [pods, services, endpoints, configmaps, secrets, namespaces, persistentvolumes, persistentvolumeclaims, nodes]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: ['']
+    resources: [pods/status, services/status, endpoints/status]
+    verbs: [get, update, patch]
+
+  # Apps resources
+  - apiGroups: [apps]
+    resources: [deployments, statefulsets, daemonsets, replicasets]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [apps]
+    resources: [deployments/status, statefulsets/status, daemonsets/status, replicasets/status]
+    verbs: [get, update, patch]
+
+  # Networking resources
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies, ingresses, ingressclasses]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies/status, ingresses/status]
+    verbs: [get, update, patch]
+
+  # Batch resources
+  - apiGroups: [batch]
+    resources: [jobs, cronjobs]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [batch]
+    resources: [jobs/status, cronjobs/status]
+    verbs: [get, update, patch]
+
+  # Autoscaling resources
+  - apiGroups: [autoscaling]
+    resources: [horizontalpodautoscalers]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [autoscaling]
+    resources: [horizontalpodautoscalers/status]
+    verbs: [get, update, patch]
+
+  # RBAC resources
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [roles, rolebindings, clusterroles, clusterrolebindings]
+    verbs: [get, list, watch, create, update, patch, delete]
+
+  # Policy resources
+  - apiGroups: [policy]
+    resources: [podsecuritypolicies]
+    verbs: [get, list, watch, create, update, patch, delete]
+
+  # Events
+  - apiGroups: ['']
+    resources: [events]
+    verbs: [create, patch]
+
+  # Pod security
+  - apiGroups: [policy]
+    resources: [podsecuritypolicies]
+    verbs: [use]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k8s-playgrounds-operator
+  labels:
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: k8s-playgrounds-operator
+subjects:
+  - kind: ServiceAccount
+    name: k8s-playgrounds-operator
+    namespace: k8s-playgrounds-operator
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-playgrounds-operator-config
+  namespace: k8s-playgrounds-operator
+  labels:
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+data:
+  # Operator configuration
+  operator.yaml: |
+    # Operator configuration
+    logLevel: info
+    logFormat: json
+
+    # Feature gates
+    featureGates:
+      HeadlessServices: true
+      StatefulSetIntegration: true
+      DNSResolution: true
+      EndpointManagement: true
+      IptablesProxy: true
+      ServiceDiscovery: true
+      Monitoring: true
+      Security: true
+      Backup: true
+      AutoHealing: true
+      Performance: true
+
+    # Default values
+    defaults:
+      clusterDomain: cluster.local
+      dnsServer: 8.8.8.8
+      refreshInterval: 30
+      loadBalancingAlgorithm: random
+      sessionAffinity: false
+
+    # Monitoring configuration
+    monitoring:
+      enabled: true
+      prometheus:
+        enabled: true
+        port: 9090
+      grafana:
+        enabled: true
+        port: 3000
+      alertManager:
+        enabled: true
+        port: 9093
+
+    # Security configuration
+    security:
+      enabled: true
+      podSecurityPolicy: true
+      networkPolicies: true
+      rbac: true
+      secretsManagement: true
+
+    # Backup configuration
+    backup:
+      enabled: true
+      schedule: "0 2 * * *"  # Daily at 2 AM
+      retention: "7d"
+      storage: "s3://k8s-playgrounds-backups"
+
+    # Auto-healing configuration
+    autoHealing:
+      enabled: true
+      deadNodeReplacement: true
+      podRestart: true
+      resourceScaling: true
+
+    # Performance configuration
+    performance:
+      enabled: true
+      resourceOptimization: true
+      loadBalancing: true
+      autoScaling: true
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-playgrounds-operator
+  namespace: k8s-playgrounds-operator
+  labels:
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: k8s-playgrounds-operator
+      app.kubernetes.io/part-of: k8s-playgrounds
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: k8s-playgrounds-operator
+        app.kubernetes.io/part-of: k8s-playgrounds
+    spec:
+      serviceAccountName: k8s-playgrounds-operator
+      containers:
+        - name: manager
+          image: k8s-playgrounds-operator:latest
+          imagePullPolicy: Always
+          command:
+            - /manager
+          args:
+            - --metrics-bind-address=:8080
+            - --health-probe-bind-address=:8081
+            - --leader-elect
+            - --log-level=info
+            - --log-format=json
+            - --feature-gates=HeadlessServices=true,StatefulSetIntegration=true,DNSResolution=true,EndpointManagement=true,IptablesProxy=true,ServiceDiscovery=true,Monitoring=true,Security=true,Backup=true,AutoHealing=true,Performance=true
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: k8s-playgrounds-operator
+            - name: CLUSTER_DOMAIN
+              value: cluster.local
+            - name: DNS_SERVER
+              value: 8.8.8.8
+            - name: REFRESH_INTERVAL
+              value: '30'
+            - name: LOAD_BALANCING_ALGORITHM
+              value: random
+            - name: SESSION_AFFINITY
+              value: 'false'
+          ports:
+            - name: metrics
+              containerPort: 8080
+              protocol: TCP
+            - name: health
+              containerPort: 8081
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: config
+              mountPath: /etc/operator
+              readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+      volumes:
+        - name: config
+          configMap:
+            name: k8s-playgrounds-operator-config
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-playgrounds-operator-metrics
+  namespace: k8s-playgrounds-operator
+  labels:
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+    - name: health
+      port: 8081
+      targetPort: 8081
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: k8s-playgrounds-operator
+  namespace: k8s-playgrounds-operator
+  labels:
+    app.kubernetes.io/name: k8s-playgrounds-operator
+    app.kubernetes.io/part-of: k8s-playgrounds
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: k8s-playgrounds-operator
+      app.kubernetes.io/part-of: k8s-playgrounds
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

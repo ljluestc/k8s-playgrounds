@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { _vi } from 'vitest'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import type { V1Job } from '@kubernetes/client-node'

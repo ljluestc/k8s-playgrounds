@@ -1,0 +1,74 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>K8s Playgrounds Test Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { background-color: #f0f0f0; padding: 20px; border-radius: 5px; }
+                .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+                .metric { background-color: #e8f4fd; padding: 15px; border-radius: 5px; text-align: center; }
+                .metric h3 { margin: 0; color: #1976d2; }
+                .metric .value { font-size: 2em; font-weight: bold; color: #1976d2; }
+                .test-results { margin: 20px 0; }
+                .test-item { padding: 10px; margin: 5px 0; border-radius: 3px; }
+                .passed { background-color: #d4edda; border-left: 4px solid #28a745; }
+                .failed { background-color: #f8d7da; border-left: 4px solid #dc3545; }
+                .error { background-color: #fff3cd; border-left: 4px solid #ffc107; }
+                .performance { background-color: #e2e3e5; padding: 15px; margin: 10px 0; border-radius: 5px; }
+                .recommendations { background-color: #d1ecf1; padding: 15px; margin: 10px 0; border-radius: 5px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>K8s Playgrounds Comprehensive Test Report</h1>
+                <p>Generated on: 2025-10-20T00:54:48.298547</p>
+            </div>
+            
+            <div class="summary">
+                <div class="metric">
+                    <h3>Total Tests</h3>
+                    <div class="value">19</div>
+                </div>
+                <div class="metric">
+                    <h3>Passed</h3>
+                    <div class="value" style="color: #28a745;">8</div>
+                </div>
+                <div class="metric">
+                    <h3>Failed</h3>
+                    <div class="value" style="color: #dc3545;">9</div>
+                </div>
+                <div class="metric">
+                    <h3>Success Rate</h3>
+                    <div class="value">42.1%</div>
+                </div>
+                <div class="metric">
+                    <h3>Avg Coverage</h3>
+                    <div class="value">0.0%</div>
+                </div>
+                <div class="metric">
+                    <h3>Duration</h3>
+                    <div class="value">47.6s</div>
+                </div>
+            </div>
+            
+            <div class="test-results">
+                <h2>Test Results</h2>
+                <div class="test-item failed"><strong>Integration Tests</strong> - FAILED (0.09s)</div><div class="test-item failed"><strong>Performance Tests</strong> - FAILED (0.10s)</div><div class="test-item error"><strong>Java Unit Tests</strong> - ERROR (0.00s)</div><div class="test-item error"><strong>Java Integration Tests</strong> - ERROR (0.00s)</div><div class="test-item failed"><strong>Go Unit Tests</strong> - FAILED (0.00s)</div><div class="test-item failed"><strong>Go Integration Tests</strong> - FAILED (0.01s)</div><div class="test-item failed"><strong>E2E Tests</strong> - FAILED (2.01s)</div><div class="test-item failed"><strong>Frontend Unit Tests</strong> - FAILED (2.65s)</div><div class="test-item passed"><strong>TinyURL System Tests</strong> - PASSED (2.87s)</div><div class="test-item passed"><strong>Newsfeed System Tests</strong> - PASSED (4.04s)</div><div class="test-item passed"><strong>Google Docs System Tests</strong> - PASSED (4.04s)</div><div class="test-item passed"><strong>Quora System Tests</strong> - PASSED (3.85s)</div><div class="test-item passed"><strong>Monitoring System Tests</strong> - PASSED (3.27s)</div><div class="test-item failed"><strong>Load Balancer System Tests</strong> - FAILED (5.89s)</div><div class="test-item failed"><strong>Backend Unit Tests</strong> - FAILED (11.93s)</div><div class="test-item passed"><strong>Messaging System Tests</strong> - PASSED (2.01s)</div><div class="test-item failed"><strong>Typeahead System Tests</strong> - FAILED (7.87s)</div><div class="test-item passed"><strong>DNS System Tests</strong> - PASSED (3.77s)</div><div class="test-item passed"><strong>Web Crawler System Tests</strong> - PASSED (35.69s)</div>
+            </div>
+            
+            <div class="performance">
+                <h2>Performance Analysis</h2>
+                <p><strong>Overall Performance:</strong> good</p>
+                
+            </div>
+            
+            <div class="recommendations">
+                <h2>Recommendations</h2>
+                <ul>
+                    <li>Fix 2 test errors</li>
+                </ul>
+            </div>
+        </body>
+        </html>
+        
