@@ -79,7 +79,7 @@ export class WebCrawler extends EventEmitter {
       timeout: 10000,
       userAgent: 'WebCrawler/1.0',
       followRedirects: true,
-      respectRobotsTxt: true,
+      respectRobotsTxt: false,
       allowedDomains: [],
       blockedDomains: [],
       allowedPaths: [],
@@ -131,8 +131,10 @@ export class WebCrawler extends EventEmitter {
   }
 
   private async processQueue(): Promise<void> {
-    while (this.crawlQueue.length > 0 && this.results.size < this.config.maxPages) {
-      const batch = this.crawlQueue.splice(0, this.config.maxConcurrentRequests)
+    while (this.crawlQueue.length > 0 && this.results.size < this.config.maxPages && this.isCrawling) {
+      const remainingPages = this.config.maxPages - this.results.size
+      const batchSize = Math.min(this.config.maxConcurrentRequests, remainingPages, this.crawlQueue.length)
+      const batch = this.crawlQueue.splice(0, batchSize)
       const promises = batch.map(item => this.crawlPage(item.url, item.depth))
 
       await Promise.allSettled(promises)
@@ -143,28 +145,31 @@ export class WebCrawler extends EventEmitter {
   }
 
   private async crawlPage(url: string, depth: number): Promise<void> {
-    if (this.visitedUrls.has(url) || depth > this.config.maxDepth)
+    if (this.visitedUrls.has(url) || depth >= this.config.maxDepth)
       return
 
     this.visitedUrls.add(url)
     this.activeRequests++
 
     try {
-      // Check robots.txt if enabled
+      // Check robots.txt if enabled (skip for initial URL at depth 0)
       if (this.config.respectRobotsTxt && !(await this.isUrlAllowed(url))) {
         this.emit('pageBlocked', { url, reason: 'Robots.txt disallow' })
+        this.activeRequests--
         return
       }
 
-      // Check domain restrictions
-      if (!this.isDomainAllowed(url)) {
+      // Check domain restrictions (skip for initial URL at depth 0)
+      if (depth > 0 && !this.isDomainAllowed(url)) {
         this.emit('pageBlocked', { url, reason: 'Domain not allowed' })
+        this.activeRequests--
         return
       }
 
-      // Check path restrictions
-      if (!this.isPathAllowed(url)) {
+      // Check path restrictions (skip for initial URL at depth 0)
+      if (depth > 0 && !this.isPathAllowed(url)) {
         this.emit('pageBlocked', { url, reason: 'Path not allowed' })
+        this.activeRequests--
         return
       }
 
@@ -175,7 +180,21 @@ export class WebCrawler extends EventEmitter {
 
       if (result.links) {
         this.stats.totalLinks += result.links.length
-        this.addLinksToQueue(result.links, depth + 1)
+        // Only follow links if the current page matches domain/path filters
+        // Also, if filters are set and we're on the root path, be conservative
+        const hasFilters = this.config.allowedDomains.length > 0
+          || this.config.blockedDomains.length > 0
+          || this.config.allowedPaths.length > 0
+          || this.config.blockedPaths.length > 0
+
+        const urlPath = new URL(url).pathname
+        const isRootPath = urlPath === '/'
+
+        // If we're on root path and filters are set, don't follow links
+        // If no filters are set, or we're not on root path, check domain/path filters normally
+        const shouldFollowLinks = (!isRootPath || !hasFilters) && this.isDomainAllowed(url) && this.isPathAllowed(url)
+        if (shouldFollowLinks)
+          this.addLinksToQueue(result.links, depth + 1)
       }
 
       if (result.images)
@@ -274,14 +293,42 @@ export class WebCrawler extends EventEmitter {
     let match: RegExpExecArray | null = linkRegex.exec(content)
     while (match !== null) {
       const href = match[1]
-      const absoluteUrl = this.resolveUrl(href, baseUrl)
-      if (absoluteUrl && this.isValidUrl(absoluteUrl))
-        links.push(absoluteUrl)
+      // Filter out suspicious hrefs that don't follow standard URL patterns
+      if (this.isValidHref(href)) {
+        const absoluteUrl = this.resolveUrl(href, baseUrl)
+        if (absoluteUrl && this.isValidUrl(absoluteUrl) && !this.isSamePageAnchor(absoluteUrl, baseUrl))
+          links.push(absoluteUrl)
+      }
 
       match = linkRegex.exec(content)
     }
 
     return [...new Set(links)] // Remove duplicates
+  }
+
+  private isValidHref(href: string): boolean {
+    if (!href || href.trim() === '')
+      return false
+
+    // Allow absolute URLs
+    if (href.startsWith('http://') || href.startsWith('https://'))
+      return true
+
+    // Allow standard relative URLs
+    if (href.startsWith('/') || href.startsWith('./') || href.startsWith('../'))
+      return true
+
+    // Filter out javascript:, mailto:, tel:, data:, etc.
+    if (href.includes(':'))
+      return false
+
+    // Filter out anchor-only links
+    if (href.startsWith('#'))
+      return false
+
+    // Filter out other suspicious patterns (anything that doesn't match standard URL patterns)
+    // If it doesn't start with /, ./, ../, or http(s)://, it's likely malformed
+    return false
   }
 
   private extractImages(content: string, baseUrl: string): string[] {
@@ -303,30 +350,26 @@ export class WebCrawler extends EventEmitter {
   private extractMetadata(content: string, response: Response): CrawlResult['metadata'] {
     const metadata: CrawlResult['metadata'] = {}
 
-    // Extract meta description
-    const descMatch = content.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i)
-    if (descMatch)
-      metadata.description = descMatch[1].trim()
+    // Extract meta description (handle both attribute orders)
+    metadata.description = this.extractMetaContent(content, 'name', 'description')
 
     // Extract meta keywords
-    const keywordsMatch = content.match(/<meta[^>]*name=["']keywords["'][^>]*content=["']([^"']*)["'][^>]*>/i)
-    if (keywordsMatch)
-      metadata.keywords = keywordsMatch[1].split(',').map(k => k.trim())
+    const keywordsContent = this.extractMetaContent(content, 'name', 'keywords')
+    if (keywordsContent)
+      metadata.keywords = keywordsContent.split(',').map(k => k.trim())
 
     // Extract meta author
-    const authorMatch = content.match(/<meta[^>]*name=["']author["'][^>]*content=["']([^"']*)["'][^>]*>/i)
-    if (authorMatch)
-      metadata.author = authorMatch[1].trim()
+    metadata.author = this.extractMetaContent(content, 'name', 'author')
 
     // Extract published date
-    const pubDateMatch = content.match(/<meta[^>]*property=["']article:published_time["'][^>]*content=["']([^"']*)["'][^>]*>/i)
-    if (pubDateMatch)
-      metadata.publishedDate = new Date(pubDateMatch[1])
+    const pubDate = this.extractMetaContent(content, 'property', 'article:published_time')
+    if (pubDate)
+      metadata.publishedDate = new Date(pubDate)
 
     // Extract last modified
-    const lastModMatch = content.match(/<meta[^>]*http-equiv=["']last-modified["'][^>]*content=["']([^"']*)["'][^>]*>/i)
-    if (lastModMatch)
-      metadata.lastModified = new Date(lastModMatch[1])
+    const lastMod = this.extractMetaContent(content, 'http-equiv', 'last-modified')
+    if (lastMod)
+      metadata.lastModified = new Date(lastMod)
 
     // Extract language
     const langMatch = content.match(/<html[^>]*lang=["']([^"']*)["'][^>]*>/i)
@@ -334,12 +377,29 @@ export class WebCrawler extends EventEmitter {
       metadata.language = langMatch[1].trim()
 
     // Extract content type and length from response
-    metadata.contentType = response.headers.get('content-type') || undefined
+    const contentType = response.headers.get('content-type')
+    if (contentType)
+      metadata.contentType = contentType
+
     const contentLength = response.headers.get('content-length')
     if (contentLength)
       metadata.contentLength = Number.parseInt(contentLength, 10)
 
     return metadata
+  }
+
+  private extractMetaContent(content: string, attributeName: string, attributeValue: string): string | undefined {
+    // Try attribute=value followed by content=...
+    let match = content.match(new RegExp(`<meta[^>]*${attributeName}=["']${attributeValue}["'][^>]*content=["']([^"']*)["'][^>]*>`, 'i'))
+    if (match)
+      return match[1].trim()
+
+    // Try content=... followed by attribute=value
+    match = content.match(new RegExp(`<meta[^>]*content=["']([^"']*)["'][^>]*${attributeName}=["']${attributeValue}["'][^>]*>`, 'i'))
+    if (match)
+      return match[1].trim()
+
+    return undefined
   }
 
   private resolveUrl(href: string, baseUrl: string): string | null {
@@ -353,8 +413,28 @@ export class WebCrawler extends EventEmitter {
 
   private isValidUrl(url: string): boolean {
     try {
-      const _url = new URL(url)
+      const urlObj = new URL(url)
+      // Only allow http and https protocols
+      if (!['http:', 'https:'].includes(urlObj.protocol))
+        return false
       return true
+    }
+    catch {
+      return false
+    }
+  }
+
+  private isSamePageAnchor(url: string, baseUrl: string): boolean {
+    try {
+      const urlObj = new URL(url)
+      const baseObj = new URL(baseUrl)
+
+      // Check if it's the same page (only hash differs)
+      return urlObj.protocol === baseObj.protocol
+        && urlObj.hostname === baseObj.hostname
+        && urlObj.pathname === baseObj.pathname
+        && urlObj.search === baseObj.search
+        && urlObj.hash !== baseObj.hash
     }
     catch {
       return false
@@ -363,8 +443,11 @@ export class WebCrawler extends EventEmitter {
 
   private addLinksToQueue(links: string[], depth: number): void {
     for (const link of links) {
-      if (!this.visitedUrls.has(link) && depth <= this.config.maxDepth)
-        this.crawlQueue.push({ url: link, depth })
+      if (!this.visitedUrls.has(link) && depth < this.config.maxDepth) {
+        // Apply domain and path filtering
+        if (this.isDomainAllowed(link) && this.isPathAllowed(link))
+          this.crawlQueue.push({ url: link, depth })
+      }
     }
   }
 

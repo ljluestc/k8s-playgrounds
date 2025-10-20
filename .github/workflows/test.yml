@@ -1,142 +1,24 @@
-name: Test Suite
+name: Comprehensive Testing Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '18'
+  JAVA_VERSION: '17'
+  PYTHON_VERSION: '3.9'
 
 jobs:
-  test:
+  # Code Quality Checks
+  code-quality:
+    name: Code Quality & Linting
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8.6.11
-          run_install: false
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run linter
-        run: pnpm lint
-
-      - name: Run backend unit tests
-        run: pnpm test:backend
-
-      - name: Run frontend unit tests
-        run: pnpm test:frontend
-        continue-on-error: true # Allow to continue if frontend tests fail initially
-
-      - name: Run E2E tests
-        run: pnpm test:e2e
-        continue-on-error: true # Allow to continue if E2E tests fail initially
-
-      - name: Generate coverage report
-        run: pnpm test:coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
-          verbose: true
-
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/lcov.info
-        continue-on-error: true
-
-      - name: Verify coverage thresholds
-        run: |
-          echo "Checking coverage thresholds..."
-          if [ -f coverage/coverage-summary.json ]; then
-            LINES=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
-            FUNCTIONS=$(cat coverage/coverage-summary.json | jq '.total.functions.pct')
-            BRANCHES=$(cat coverage/coverage-summary.json | jq '.total.branches.pct')
-            STATEMENTS=$(cat coverage/coverage-summary.json | jq '.total.statements.pct')
-
-            echo "Coverage Summary:"
-            echo "  Lines: $LINES%"
-            echo "  Functions: $FUNCTIONS%"
-            echo "  Branches: $BRANCHES%"
-            echo "  Statements: $STATEMENTS%"
-
-            # For now, just report coverage without failing
-            # Uncomment below to enforce 100% coverage
-            # if (( $(echo "$LINES < 100" | bc -l) )); then
-            #   echo "❌ Line coverage is below 100%: $LINES%"
-            #   exit 1
-            # fi
-          else
-            echo "⚠️  Coverage summary not found"
-          fi
-
-      - name: Comment coverage on PR
-        if: github.event_name == 'pull_request'
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        with:
-          lcov-file: ./coverage/lcov.info
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: |
-            coverage/
-            **/*.log
-
-      - name: Test Summary
-        if: always()
-        run: |
-          echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f coverage/coverage-summary.json ]; then
-            echo "### Coverage:" >> $GITHUB_STEP_SUMMARY
-            echo "| Metric | Coverage |" >> $GITHUB_STEP_SUMMARY
-            echo "|--------|----------|" >> $GITHUB_STEP_SUMMARY
-            echo "| Lines | $(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Functions | $(cat coverage/coverage-summary.json | jq -r '.total.functions.pct')% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Branches | $(cat coverage/coverage-summary.json | jq -r '.total.branches.pct')% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Statements | $(cat coverage/coverage-summary.json | jq -r '.total.statements.pct')% |" >> $GITHUB_STEP_SUMMARY
-          fi
-
-  build:
-    runs-on: ubuntu-latest
-    needs: test
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -144,22 +26,401 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8.6.11
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
-      - name: Build project
-        run: pnpm build
+      - name: Run ESLint
+        run: npx eslint . --ext .js,.ts,.vue --max-warnings 0
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Run Prettier check
+        run: npx prettier --check .
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Check for TODO/FIXME comments
+        run: |
+          if grep -r "TODO\|FIXME" src/ --exclude-dir=node_modules; then
+            echo "Found TODO/FIXME comments in source code"
+            exit 1
+          fi
+
+  # Unit Tests
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: code-quality
+    strategy:
+      matrix:
+        test-group: [backend, frontend, systems]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          name: dist
-          path: dist/
-          retention-days: 7
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: |
+          case "${{ matrix.test-group }}" in
+            backend)
+              npx vitest run src/backend --coverage --reporter=json --outputFile=coverage-backend.json
+              ;;
+            frontend)
+              npx vitest run src/frontend --coverage --reporter=json --outputFile=coverage-frontend.json
+              ;;
+            systems)
+              npx vitest run systems --coverage --reporter=json --outputFile=coverage-systems.json
+              ;;
+          esac
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage-${{ matrix.test-group }}.json
+          flags: unit-tests,${{ matrix.test-group }}
+          name: unit-tests-${{ matrix.test-group }}
+
+  # Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run integration tests
+        run: npx vitest run test/integration --coverage --reporter=json --outputFile=coverage-integration.json
+
+      - name: Upload integration coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage-integration.json
+          flags: integration-tests
+          name: integration-tests
+
+  # Performance Tests
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run performance tests
+        run: npx vitest run test/performance --bench --reporter=json --outputFile=performance-results.json
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: performance-results.json
+
+  # Java Tests
+  java-tests:
+    name: Java Tests
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run Java unit tests
+        run: mvn test -Pcoverage
+
+      - name: Run Java integration tests
+        run: mvn verify -Pcoverage
+
+      - name: Generate JaCoCo report
+        run: mvn jacoco:report
+
+      - name: Upload JaCoCo reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-reports
+          path: target/site/jacoco/
+
+  # End-to-End Tests
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    needs: [integration-tests, performance-tests]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: |
+          npm start &
+          sleep 30
+
+      - name: Run E2E tests
+        run: npx vitest run test/e2e --reporter=json --outputFile=e2e-results.json
+
+      - name: Upload E2E results
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-results
+          path: e2e-results.json
+
+  # Comprehensive Test Suite
+  comprehensive-tests:
+    name: Comprehensive Test Suite
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, performance-tests, java-tests]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-benchmark pytest-xdist
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Install Java dependencies
+        run: mvn clean install -DskipTests
+
+      - name: Run comprehensive test suite
+        run: python3 test_comprehensive.py --verbose
+
+      - name: Upload comprehensive test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: comprehensive-test-report
+          path: |
+            test_report.html
+            test_report.json
+
+  # Security Scanning
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  # Coverage Report
+  coverage-report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, java-tests]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all coverage reports
+        uses: actions/download-artifact@v3
+        with:
+          path: coverage-reports/
+
+      - name: Combine coverage reports
+        run: |
+          # Combine JavaScript/TypeScript coverage
+          npx nyc merge coverage-reports/ coverage-combined.json
+
+          # Generate combined HTML report
+          npx nyc report --reporter=html --reporter=json --reporter=text
+
+      - name: Upload combined coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage-combined.json
+          flags: combined-coverage
+          name: combined-coverage-report
+
+  # Performance Monitoring
+  performance-monitoring:
+    name: Performance Monitoring
+    runs-on: ubuntu-latest
+    needs: performance-tests
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download performance results
+        uses: actions/download-artifact@v3
+        with:
+          name: performance-results
+          path: performance-results/
+
+      - name: Analyze performance trends
+        run: |
+          # Compare with baseline performance
+          python3 scripts/analyze_performance.py performance-results/
+
+      - name: Create performance report
+        run: |
+          python3 scripts/generate_performance_report.py performance-results/
+
+      - name: Upload performance report
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-trend-report
+          path: performance-report.html
+
+  # Notification
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [comprehensive-tests, coverage-report, security-scan]
+    if: always()
+    steps:
+      - name: Notify on success
+        if: ${{ needs.comprehensive-tests.result == 'success' }}
+        run: |
+          echo "✅ All tests passed successfully!"
+
+      - name: Notify on failure
+        if: ${{ needs.comprehensive-tests.result == 'failure' }}
+        run: |
+          echo "❌ Some tests failed. Please check the logs."
+
+      - name: Send Slack notification
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#testing'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Cleanup
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [comprehensive-tests, coverage-report, performance-monitoring]
+    if: always()
+    steps:
+      - name: Clean up artifacts
+        run: |
+          # Clean up temporary files
+          rm -rf coverage-reports/
+          rm -rf performance-results/
+          rm -rf test-results/
+
+      - name: Clean up Docker containers
+        run: |
+          docker system prune -f
+
+      - name: Clean up Maven cache
+        run: |
+          mvn dependency:purge-local-repository -DmanualInclude="com.k8splaygrounds"

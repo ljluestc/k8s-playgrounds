@@ -1,587 +1,255 @@
-# Testing Product Requirements Document (PRD)
+# K8s Playgrounds - Comprehensive Testing PRD
+
+## Product Requirements Document (PRD)
+### Comprehensive Testing Framework Implementation
+
+---
 
 ## 1. Executive Summary
 
-### 1.1 Objective
-Achieve and maintain 100% unit test and integration test coverage for the k8s-playgrounds application, ensuring robust, reliable, and maintainable code quality.
+### 1.1 Project Overview
+The K8s Playgrounds project requires a comprehensive testing framework that ensures 100% test coverage across all systems, components, and integrations. This PRD outlines the implementation of a robust testing infrastructure that covers unit tests, integration tests, performance tests, and automated reporting.
 
-### 1.2 Current Status
-- **Initial Coverage**: 0% (No existing tests)
-- **Target Coverage**: 100% (Unit + Integration)
-- **Timeline**: Immediate implementation
+### 1.2 Objectives
+- Achieve 100% unit test coverage across all backend services and controllers
+- Achieve 100% integration test coverage for system interactions
+- Implement comprehensive performance benchmarking
+- Establish automated CI/CD pipeline with pre-commit hooks
+- Create detailed reporting and metrics dashboard
 
-### 1.3 Scope
-- Backend API testing (NestJS controllers and services)
-- Frontend component testing (Vue 3 components)
-- End-to-end integration testing
-- CI/CD integration
-- Pre-commit hooks for automated testing
-
----
-
-## 2. Technology Stack
-
-### 2.1 Testing Frameworks
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Vitest | ^1.0.4 | Unit testing framework (Vite-native, fast) |
-| @nestjs/testing | ^10.2.8 | NestJS testing utilities |
-| @vue/test-utils | ^2.4.3 | Vue component testing |
-| @testing-library/vue | ^8.0.1 | Vue testing library (user-centric tests) |
-| happy-dom | ^12.10.3 | Lightweight DOM implementation |
-| supertest | ^6.3.3 | HTTP assertion library for E2E tests |
-| @vitest/coverage-v8 | ^1.0.4 | Code coverage reporting |
-| @vitest/ui | ^1.0.4 | Visual test runner UI |
-
-### 2.2 Test Configuration Files
-- `vitest.config.ts` - Main configuration
-- `vitest.backend.config.ts` - Backend-specific tests
-- `vitest.frontend.config.ts` - Frontend-specific tests
-- `vitest.e2e.config.ts` - E2E/integration tests
+### 1.3 Success Criteria
+- **Unit Test Coverage**: 100% for all TypeScript/JavaScript components
+- **Integration Test Coverage**: 100% for all system interactions
+- **Performance Benchmarks**: Baseline metrics established for all critical paths
+- **CI/CD Pipeline**: Automated testing on every commit
+- **Pre-commit Hooks**: Code quality enforcement before commits
 
 ---
 
-## 3. Test Coverage Requirements
+## 2. Technical Requirements
 
-### 3.1 Coverage Targets
-All metrics must reach **100%** coverage:
+### 2.1 Testing Framework Components
 
-- **Lines**: 100%
-- **Functions**: 100%
-- **Branches**: 100%
-- **Statements**: 100%
+#### 2.1.1 Unit Testing
+- **Framework**: Vitest (replacing Jest)
+- **Coverage**: Istanbul/NYC for coverage reporting
+- **Mocking**: Vi.fn() for function mocking
+- **Assertions**: Vitest expect API
 
-### 3.2 Exclusions
-The following are excluded from coverage requirements:
-- `node_modules/**`
-- `dist/**`
-- `**/*.d.ts` (TypeScript declaration files)
-- `**/*.spec.ts` and `**/*.test.ts` (test files themselves)
-- `src/frontend/generated/**` (Auto-generated API clients)
-- `src/backend/k8s/model/**` (Auto-generated Kubernetes models)
-- `src/backend/index.ts` and `index-web.ts` (Entry points)
+#### 2.1.2 Integration Testing
+- **API Testing**: Supertest for HTTP API testing
+- **Database Testing**: Test containers for database integration
+- **External Services**: Mock external API calls
+- **End-to-End**: Playwright for browser automation
 
-### 3.3 Coverage Reporting
-- **Formats**: Text, JSON, HTML, LCOV
-- **Location**: `./coverage/` directory
-- **CI Integration**: Coverage reports uploaded to code coverage services
+#### 2.1.3 Performance Testing
+- **Benchmarking**: Vitest bench for performance metrics
+- **Load Testing**: Artillery for load testing
+- **Memory Profiling**: Node.js built-in profiler
+- **Response Time**: Custom timing utilities
 
----
+### 2.2 Test Categories
 
-## 4. Test Categories
+#### 2.2.1 Backend Tests
+- **K8s Services**: All Kubernetes resource services
+- **Controllers**: All REST API controllers
+- **Utilities**: Helper functions and utilities
+- **Models**: Data models and interfaces
 
-### 4.1 Backend Unit Tests
+#### 2.2.2 Frontend Tests
+- **Components**: Vue.js component testing
+- **Services**: Frontend service layer
+- **Utils**: Frontend utility functions
+- **E2E**: End-to-end user workflows
 
-#### 4.1.1 Controller Tests
-**Location**: `src/backend/k8s/*/[resource].controller.spec.ts`
+#### 2.2.3 System Tests
+- **TinyURL System**: URL shortening and management
+- **Newsfeed System**: Social media feed functionality
+- **Google Docs System**: Document collaboration
+- **Quora System**: Q&A platform functionality
+- **Load Balancer System**: Traffic distribution
+- **Monitoring System**: System health monitoring
+- **Typeahead System**: Search suggestions
+- **Messaging System**: Real-time messaging
+- **Web Crawler System**: Web content extraction
+- **DNS System**: Domain name resolution
 
-**Coverage Requirements**:
-- All HTTP endpoints (@Get, @Post, @Delete, etc.)
-- All route parameters and query handling
-- Request body validation
-- Error handling and edge cases
-- Authentication/authorization (if applicable)
+### 2.3 Coverage Requirements
 
-**Test Scenarios per Controller**:
-- ✅ List all resources
-- ✅ List by namespace (if applicable)
-- ✅ Get single resource by name
-- ✅ Delete resource(s)
-- ✅ Custom operations (restart, scale, etc.)
-- ✅ Error handling (404, 500, validation errors)
-- ✅ Empty result handling
-- ✅ Special characters in parameters
+#### 2.3.1 Code Coverage Metrics
+- **Statements**: 100% coverage required
+- **Branches**: 100% coverage required
+- **Functions**: 100% coverage required
+- **Lines**: 100% coverage required
 
-#### 4.1.2 Service Tests
-**Location**: `src/backend/k8s/*/[resource].service.spec.ts`
-
-**Coverage Requirements**:
-- All business logic methods
-- Kubernetes API client interactions
-- Data transformations
-- Cron jobs and scheduled tasks
-- WebSocket/PTY management
-- Heartbeat mechanisms
-- Error propagation
-
-**Test Scenarios per Service**:
-- ✅ CRUD operations (Create, Read, Update, Delete)
-- ✅ List operations with/without namespace
-- ✅ Field selectors and label selectors
-- ✅ Resource relationships (e.g., Pod → PVC)
-- ✅ Real-time updates (WebSocket)
-- ✅ Terminal/PTY management
-- ✅ Heartbeat timeout handling
-- ✅ API error handling
-
-**41 Kubernetes Resources to Test**:
-1. Pod
-2. Deployment
-3. Namespace
-4. Node
-5. Event
-6. ReplicaSet
-7. DaemonSet
-8. StatefulSet
-9. CronJob
-10. Job
-11. ConfigMap
-12. Secret
-13. PriorityClass
-14. ResourceQuota
-15. LimitRange
-16. HorizontalPodAutoscaler (HPA)
-17. PodDisruptionBudget (PDB)
-18. Endpoint
-19. EndpointSlice
-20. Service
-21. Ingress
-22. IngressClass
-23. StorageClass
-24. PersistentVolume (PV)
-25. PersistentVolumeClaim (PVC)
-26. MutatingWebhookConfiguration
-27. ValidatingWebhookConfiguration
-28. Role
-29. RoleBinding
-30. ClusterRole
-31. ClusterRoleBinding
-32. ServiceAccount
-33. ReplicationController
-34. NetworkPolicy
-35. LimitRange
-36. ResourceQuota
-37. PodSecurityPolicy
-38. APIService
-39. CustomResourceDefinition (CRD)
-40. Lease
-41. Event
-
-### 4.2 Frontend Unit Tests
-
-#### 4.2.1 Component Tests
-**Location**: `src/frontend/components/*/[component].spec.ts`
-
-**Coverage Requirements**:
-- Component rendering
-- Props validation
-- Event emissions
-- Computed properties
-- Watchers
-- Lifecycle hooks
-- User interactions
-- Conditional rendering
-- Slot content
-
-**Test Scenarios per Component**:
-- ✅ Initial render
-- ✅ Loading states
-- ✅ Error states
-- ✅ Empty states
-- ✅ Data-populated states
-- ✅ User interactions (clicks, inputs)
-- ✅ Form validation
-- ✅ Route navigation
-- ✅ API integration
-
-#### 4.2.2 Service Tests
-**Location**: `src/frontend/service/*/[service].spec.ts`
-
-**Coverage Requirements**:
-- API client methods
-- Data transformations
-- Error handling
-- State management
-
-### 4.3 Integration/E2E Tests
-
-#### 4.3.1 API Integration Tests
-**Location**: `test/e2e/**/*.spec.ts`
-
-**Coverage Requirements**:
-- End-to-end user flows
-- API endpoint integration
-- Database/state consistency
-- Real Kubernetes cluster interaction (optional)
-- WebSocket connections
-- File uploads/downloads
-
-**Test Scenarios**:
-- ✅ Full resource lifecycle (create → read → update → delete)
-- ✅ Multi-step workflows
-- ✅ Concurrent operations
-- ✅ Authentication flows
-- ✅ Error recovery
-- ✅ Performance benchmarks
+#### 2.3.2 Test Coverage Areas
+- **Happy Path**: All successful execution paths
+- **Error Handling**: All error conditions and edge cases
+- **Boundary Conditions**: Input validation and limits
+- **Integration Points**: All external service interactions
 
 ---
 
-## 5. Test Implementation Strategy
+## 3. Implementation Plan
 
-### 5.1 Phase 1: Infrastructure Setup ✅
-- [x] Install Vitest and testing dependencies
-- [x] Create test configuration files
-- [x] Set up test utilities and mocks
-- [x] Configure coverage thresholds
+### 3.1 Phase 1: Foundation Setup (Week 1)
+- [ ] Install and configure Vitest
+- [ ] Set up coverage reporting
+- [ ] Create test utilities and helpers
+- [ ] Establish test data factories
 
-### 5.2 Phase 2: Backend Tests
-- [x] Create test utilities (K8sMockFactory, NestJSTestHelper)
-- [x] Implement Pod controller tests (template)
-- [x] Implement Pod service tests (template)
-- [x] Implement Deployment tests (template)
-- [ ] Generate tests for remaining 39 resources using script
-- [ ] Achieve 100% backend coverage
+### 3.2 Phase 2: Unit Test Implementation (Week 2-3)
+- [ ] Backend service tests (100% coverage)
+- [ ] Controller tests (100% coverage)
+- [ ] Frontend component tests (100% coverage)
+- [ ] Utility function tests (100% coverage)
 
-### 5.3 Phase 3: Frontend Tests
-- [ ] Create Vue component test utilities
-- [ ] Implement ListView component tests
-- [ ] Implement DetailView component tests
-- [ ] Implement common component tests
-- [ ] Achieve 100% frontend coverage
+### 3.3 Phase 3: Integration Test Implementation (Week 4)
+- [ ] API integration tests
+- [ ] Database integration tests
+- [ ] External service integration tests
+- [ ] System interaction tests
 
-### 5.4 Phase 4: E2E Tests
-- [ ] Set up E2E test environment
-- [ ] Create API integration tests
-- [ ] Create workflow tests
-- [ ] Performance and load tests
+### 3.4 Phase 4: Performance Testing (Week 5)
+- [ ] Performance benchmarks
+- [ ] Load testing scenarios
+- [ ] Memory usage profiling
+- [ ] Response time analysis
 
-### 5.5 Phase 5: CI/CD Integration
-- [ ] Update GitHub Actions workflow
-- [ ] Add test execution to CI pipeline
-- [ ] Configure coverage reporting
-- [ ] Set up pre-commit hooks
-- [ ] Add test status badges
+### 3.5 Phase 5: CI/CD Pipeline (Week 6)
+- [ ] GitHub Actions workflow
+- [ ] Pre-commit hooks
+- [ ] Automated reporting
+- [ ] Coverage badges
 
 ---
 
-## 6. Test Scripts
+## 4. Technical Specifications
 
-### 6.1 Package.json Scripts
-```json
-{
-  "test": "vitest run",
-  "test:watch": "vitest",
-  "test:ui": "vitest --ui",
-  "test:coverage": "vitest run --coverage",
-  "test:backend": "vitest run --config vitest.backend.config.ts",
-  "test:frontend": "vitest run --config vitest.frontend.config.ts",
-  "test:e2e": "vitest run --config vitest.e2e.config.ts",
-  "test:all": "pnpm test:backend && pnpm test:frontend && pnpm test:e2e && pnpm test:coverage"
-}
+### 4.1 Test File Structure
+```
+test/
+├── unit/
+│   ├── backend/
+│   │   ├── services/
+│   │   ├── controllers/
+│   │   └── utils/
+│   ├── frontend/
+│   │   ├── components/
+│   │   ├── services/
+│   │   └── utils/
+│   └── systems/
+│       ├── tinyurl/
+│       ├── newsfeed/
+│       └── ...
+├── integration/
+│   ├── api/
+│   ├── database/
+│   └── external/
+├── performance/
+│   ├── benchmarks/
+│   ├── load-tests/
+│   └── profiling/
+└── e2e/
+    ├── user-flows/
+    └── scenarios/
 ```
 
-### 6.2 Automated Test Generation
-**Script**: `scripts/generate-tests.ts`
-
-**Features**:
-- Generates controller test templates
-- Generates service test templates
-- Supports 41+ Kubernetes resources
-- Customizable per resource type
-
-**Usage**:
-```bash
-ts-node scripts/generate-tests.ts
+### 4.2 Test Configuration
+```typescript
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      thresholds: {
+        statements: 100,
+        branches: 100,
+        functions: 100,
+        lines: 100
+      }
+    },
+    environment: 'node',
+    globals: true,
+    setupFiles: ['./test/setup.ts']
+  }
+})
 ```
 
----
-
-## 7. CI/CD Integration
-
-### 7.1 GitHub Actions Workflow
-
-**File**: `.github/workflows/test.yml`
-
-```yaml
-name: Test Suite
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.6.11
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run backend tests
-        run: pnpm test:backend
-
-      - name: Run frontend tests
-        run: pnpm test:frontend
-
-      - name: Run E2E tests
-        run: pnpm test:e2e
-
-      - name: Generate coverage report
-        run: pnpm test:coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: true
-
-      - name: Verify 100% coverage
-        run: |
-          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
-          if (( $(echo "$COVERAGE < 100" | bc -l) )); then
-            echo "Coverage is below 100%: $COVERAGE%"
-            exit 1
-          fi
-```
-
-### 7.2 Pre-commit Hooks
-
-**File**: `package.json` (already configured)
-
-```json
-{
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
+### 4.3 Mock Configuration
+```typescript
+// test/utils/mocks.ts
+export const createMockK8sService = () => ({
+  podService: {
+    List: vi.fn(),
+    GetOneByNsName: vi.fn(),
+    Delete: vi.fn(),
+    Update: vi.fn()
   },
-  "lint-staged": {
-    "*.{js,ts,tsx,vue,md,json,yml}": [
-      "eslint --fix"
-    ],
-    "*.{ts,tsx,vue}": [
-      "vitest related --run"
-    ]
-  }
-}
-```
-
-**Enhanced version**:
-```json
-{
-  "lint-staged": {
-    "*.{js,ts,tsx,vue}": [
-      "eslint --fix",
-      "vitest related --run --coverage"
-    ]
-  }
-}
+  // ... other services
+})
 ```
 
 ---
 
-## 8. Quality Gates
+## 5. Quality Assurance
 
-### 8.1 Pull Request Requirements
-- ✅ All tests must pass
-- ✅ 100% code coverage maintained
-- ✅ No eslint errors
-- ✅ All TypeScript types valid
-- ✅ E2E tests pass (if modified endpoints)
+### 5.1 Test Quality Standards
+- **Naming**: Descriptive test names following Given-When-Then pattern
+- **Structure**: AAA pattern (Arrange, Act, Assert)
+- **Isolation**: Each test is independent and can run in any order
+- **Data**: Use test data factories for consistent test data
 
-### 8.2 Merge Criteria
-- All CI checks green
-- Code review approved
-- Coverage report shows 100%
-- No console errors/warnings
+### 5.2 Code Review Requirements
+- All test files must be reviewed before merging
+- Coverage reports must be attached to PRs
+- Performance benchmarks must not regress
+- Integration tests must pass in CI environment
 
----
-
-## 9. Test Maintenance
-
-### 9.1 Adding New Features
-When adding new features:
-1. Write tests first (TDD approach)
-2. Implement feature
-3. Ensure 100% coverage
-4. Update documentation
-
-### 9.2 Modifying Existing Code
-When modifying code:
-1. Update related tests
-2. Run affected tests (`vitest related`)
-3. Verify coverage remains 100%
-4. Update E2E tests if APIs changed
-
-### 9.3 Deprecating Features
-When removing features:
-1. Remove related tests
-2. Verify coverage still 100%
-3. Update integration tests
+### 5.3 Continuous Monitoring
+- Daily coverage reports
+- Weekly performance trend analysis
+- Monthly test suite optimization
+- Quarterly test strategy review
 
 ---
 
-## 10. Metrics and Reporting
+## 6. Success Metrics
 
-### 10.1 Coverage Dashboard
-- **Tool**: Codecov / Coveralls
-- **Access**: Public badge on README
-- **Updates**: Automatic on every commit
+### 6.1 Coverage Metrics
+- **Unit Test Coverage**: 100% (Target)
+- **Integration Test Coverage**: 100% (Target)
+- **E2E Test Coverage**: 90% (Target)
 
-### 10.2 Test Performance Metrics
-- Total test count
-- Test execution time
-- Slowest tests identification
-- Flaky test detection
+### 6.2 Performance Metrics
+- **Test Execution Time**: < 5 minutes for full suite
+- **Test Reliability**: 99.9% pass rate
+- **CI Pipeline Time**: < 10 minutes end-to-end
 
-### 10.3 Regular Audits
-- Weekly: Review test failures
-- Monthly: Analyze test performance
-- Quarterly: Update test strategies
-
----
-
-## 11. Best Practices
-
-### 11.1 Test Writing Guidelines
-- ✅ One test case per scenario
-- ✅ Clear, descriptive test names
-- ✅ AAA pattern (Arrange, Act, Assert)
-- ✅ No test interdependencies
-- ✅ Mock external dependencies
-- ✅ Test edge cases and errors
-- ✅ Keep tests simple and focused
-
-### 11.2 Mock Strategy
-- Mock Kubernetes API clients
-- Mock WebSocket connections
-- Mock file system operations
-- Mock external HTTP requests
-- Use test fixtures for complex data
-
-### 11.3 Performance
-- Tests should complete in < 30 seconds total
-- Individual tests < 1 second
-- Use parallel execution
-- Optimize slow tests
+### 6.3 Quality Metrics
+- **Bug Detection Rate**: 95% of bugs caught by tests
+- **Regression Prevention**: 100% of regressions prevented
+- **Code Confidence**: 100% deployment confidence
 
 ---
 
-## 12. Deliverables
+## 7. Risk Assessment
 
-### 12.1 Test Files
-- ✅ 82+ controller test files (41 resources × 2)
-- ✅ 82+ service test files
-- ✅ 40+ frontend component tests
-- ✅ 20+ E2E test suites
+### 7.1 Technical Risks
+- **Test Maintenance**: High maintenance overhead
+- **Performance Impact**: Tests slowing down development
+- **False Positives**: Flaky tests causing CI failures
 
-### 12.2 Configuration
-- ✅ Vitest configuration files (4)
-- ✅ Test setup files (4)
-- ✅ Mock utilities (2)
-- ✅ Test generator script (1)
-
-### 12.3 Documentation
-- ✅ This PRD document
-- ✅ Test writing guide
-- ✅ CI/CD setup guide
-- ✅ Coverage requirements
-
-### 12.4 CI/CD
-- ✅ GitHub Actions workflow
-- ✅ Pre-commit hooks
-- ✅ Coverage reporting
-- ✅ Status badges
+### 7.2 Mitigation Strategies
+- **Automated Test Generation**: Use tools to generate boilerplate tests
+- **Parallel Execution**: Run tests in parallel to reduce execution time
+- **Test Stability**: Implement retry mechanisms and better test isolation
 
 ---
 
-## 13. Success Criteria
+## 8. Conclusion
 
-### 13.1 Quantitative Metrics
-- ✅ 100% line coverage
-- ✅ 100% function coverage
-- ✅ 100% branch coverage
-- ✅ 100% statement coverage
-- ✅ All CI checks passing
-- ✅ < 30s total test execution time
+This comprehensive testing framework will ensure the highest quality standards for the K8s Playgrounds project. By achieving 100% test coverage and implementing robust CI/CD practices, we will deliver a reliable, maintainable, and high-performance system.
 
-### 13.2 Qualitative Metrics
-- ✅ Tests are maintainable
-- ✅ Tests are readable
-- ✅ Tests are reliable (no flakiness)
-- ✅ Tests provide confidence
-- ✅ Tests document behavior
-
----
-
-## 14. Timeline
-
-| Phase | Duration | Deliverables |
-|-------|----------|--------------|
-| Phase 1: Infrastructure | 1 day | ✅ Vitest setup, configs, mocks |
-| Phase 2: Backend Tests | 2-3 days | 82+ backend test files |
-| Phase 3: Frontend Tests | 2-3 days | 40+ component test files |
-| Phase 4: E2E Tests | 1-2 days | 20+ E2E test suites |
-| Phase 5: CI/CD | 1 day | Workflow, hooks, badges |
-| **Total** | **7-10 days** | **200+ test files, 100% coverage** |
-
----
-
-## 15. Risks and Mitigation
-
-### 15.1 Risks
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Auto-generated tests insufficient | High | Medium | Manual review and enhancement |
-| Flaky tests | High | Low | Proper mocking, isolation |
-| Long test execution time | Medium | Low | Parallel execution, optimization |
-| Kubernetes API changes | Medium | Low | Version pinning, update strategy |
-
-### 15.2 Dependencies
-- Kubernetes client library stability
-- NestJS testing framework compatibility
-- Vue Test Utils updates
-- Vitest stability
-
----
-
-## 16. Appendix
-
-### 16.1 Useful Commands
-```bash
-# Run all tests
-pnpm test:all
-
-# Run specific test file
-pnpm test src/backend/k8s/pod/pod.service.spec.ts
-
-# Run tests in watch mode
-pnpm test:watch
-
-# Open test UI
-pnpm test:ui
-
-# Generate coverage report
-pnpm test:coverage
-
-# Run tests for changed files
-vitest related
-
-# Generate tests for all resources
-ts-node scripts/generate-tests.ts
-```
-
-### 16.2 Resources
-- [Vitest Documentation](https://vitest.dev/)
-- [Vue Test Utils Guide](https://test-utils.vuejs.org/)
-- [NestJS Testing](https://docs.nestjs.com/fundamentals/testing)
-- [Testing Library](https://testing-library.com/)
-
----
-
-**Document Version**: 1.0
-**Last Updated**: 2025-10-17
-**Author**: Claude Code AI
-**Status**: Active Implementation
+The implementation will be executed in phases, with continuous monitoring and optimization to ensure the testing framework remains effective and efficient throughout the project lifecycle.
