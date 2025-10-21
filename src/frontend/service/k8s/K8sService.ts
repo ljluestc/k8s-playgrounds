@@ -7,6 +7,37 @@ export class K8sService {
   static watchService = new WatchService()
   static playService = new Play({ BASE: BackEndUrl.getUrl() }).default
 
+  static async batchUploadFiles(files: File[]): Promise<{
+    success: boolean
+    message: string
+    results: Array<{
+      fileName: string
+      resource: string
+      namespace: string
+      result: any
+    }>
+    errors: Array<{
+      fileName: string
+      error: string
+    }>
+  }> {
+    const formData = new FormData()
+
+    files.forEach((file, _index) => {
+      formData.append('files', file)
+    })
+
+    const response = await fetch(`${BackEndUrl.getUrl()}/k8s/Client/batch-upload`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok)
+      throw new Error(`HTTP error! status: ${response.status}`)
+
+    return await response.json()
+  }
+
   static async getResource({
     resType,
                                  ns,

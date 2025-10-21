@@ -4,6 +4,7 @@ import { K8sService } from '@frontend/service/k8s/K8sService'
 import {
   StackExchange,
 } from '@vicons/fa'
+import { CloudUploadOutline } from '@vicons/ionicons5'
 import type { Component } from 'vue'
 import { h, onBeforeUnmount, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
@@ -29,6 +30,20 @@ const headerMenuOptions: MenuOption[] = [
       ),
     key: 'go-to-kubeconfig',
     icon: renderIcon(StackExchange),
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
+            path: '/batch-upload',
+          },
+        },
+        { default: () => 'Batch Upload' },
+      ),
+    key: 'go-to-batch-upload',
+    icon: renderIcon(CloudUploadOutline),
   },
 ]
 

@@ -31,6 +31,7 @@ import SaListView from '@frontend/components/ServiceAccount/SaListView.vue'
 import StsListView from '@frontend/components/statefulset/StsListView.vue'
 import StorageClassListView from '@frontend/components/StorageClass/StorageClassListView.vue'
 import ValidatingWebhookListView from '@frontend/components/ValidatingWebhook/ValidatingWebhookListView.vue'
+import BatchUploadView from '@frontend/components/common/BatchUploadView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import EventListView from '@frontend/components/event/EventListView.vue'
 import NodeListView from '@frontend/components/node/NodeListView.vue'
@@ -40,6 +41,10 @@ import PodListView from '@frontend/components/pod/PodListView.vue'
 export default createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/batch-upload',
+      component: BatchUploadView,
+    },
     {
       path: '/kubeconfig',
       component: KubeConfigView,
