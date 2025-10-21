@@ -84,3 +84,4 @@ yarn-error.log
 /package-lock.json
 /yarn.lock
 /src/frontend/generated/
+test-results.json

@@ -1,0 +1,24 @@
+apiVersion: aviatrix.k8s.io/v1alpha1
+kind: AviatrixGateway
+metadata:
+  name: aws-gateway
+  namespace: default
+spec:
+  cloudType: "aws"
+  accountName: "aws-account"
+  gwName: "aws-gateway"
+  vpcId: "vpc-12345678"
+  vpcRegion: "us-west-2"
+  gwSize: "t3.medium"
+  subnet: "subnet-12345678"
+  enableNat: true
+  enableVpcDnsServer: false
+  enableEncryptVolume: true
+  volumeSize: 100
+  enableMonitorSubnets: false
+  enablePublicSubnetFiltering: false
+  enablePrivateOob: false
+  tags:
+    environment: "production"
+    team: "networking"
+  haEnabled: false

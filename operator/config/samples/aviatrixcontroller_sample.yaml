@@ -1,0 +1,19 @@
+apiVersion: aviatrix.k8s.io/v1alpha1
+kind: AviatrixController
+metadata:
+  name: aviatrix-controller
+  namespace: default
+spec:
+  controllerIP: "10.0.0.100"
+  username: "admin"
+  password: "password123"
+  version: "6.8"
+  cloudType: "aws"
+  accountName: "aws-account"
+  region: "us-west-2"
+  cidr: "10.0.0.0/16"
+  instanceSize: "t3.medium"
+  enableHA: false
+  tags:
+    environment: "production"
+    team: "networking"
