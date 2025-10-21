@@ -1,4 +1,5 @@
 const fs = require('node:fs')
+// const path = require('node:path') // Unused import removed
 
 // List of controller test files that need to be fixed
 const testFiles = [

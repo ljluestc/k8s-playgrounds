@@ -14,7 +14,7 @@ const props = defineProps({
   persistentVolume: V1PersistentVolume,
   isDropdown: Boolean,
 })
-const message = useMessage()
+const _message = useMessage()
 const dialog = useDialog()
 const drawer = useDrawerService()
 function getOptions(): ActionMenuOption[] {

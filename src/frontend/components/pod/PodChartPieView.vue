@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 // import { Gauge } from '@opentiny/vue-chart'
 import Pie from '@opentiny/vue-chart-pie'
 
-const props = defineProps({
+const _props = defineProps({
   count: Number,
   items: Array<number>,
 })
@@ -25,7 +25,7 @@ const chartSettings = computed(() => {
 
   }
 })
-const extend = ref({})
+const _extend = ref({})
 </script>
 
 <template>

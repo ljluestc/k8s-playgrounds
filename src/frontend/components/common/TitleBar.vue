@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NH6, NText } from 'naive-ui'
 
-const props = defineProps({
+const _props = defineProps({
   title: String,
 })
 </script>

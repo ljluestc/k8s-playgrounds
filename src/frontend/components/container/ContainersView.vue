@@ -31,16 +31,16 @@ async function forward(pod: V1Pod, p: V1ContainerPort) {
   })
   message.success('转发成功')
 }
-function copy(text) {
-  ClipboardHelper.copyToClipboard(text,
-    () => {
-      message.success('复制成功')
-    },
-    (error) => {
-      console.error(`${text}复制文本到剪贴板时出错:${error}`)
-    },
-  )
-}
+// function copy(_text) {
+//   ClipboardHelper.copyToClipboard(_text,
+//     () => {
+//       message.success('复制成功')
+//     },
+//     (error) => {
+//       console.error(`${_text}复制文本到剪贴板时出错:${error}`)
+//     },
+//   )
+// }
 </script>
 
 <template>

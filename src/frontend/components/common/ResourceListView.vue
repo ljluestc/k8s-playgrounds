@@ -15,7 +15,7 @@ const props = defineProps({
   miniStyle: Boolean,
   onRowClick: {
     type: Function,
-    default: (row: any) => {
+    default: (_row: any) => {
       return Function
     },
   },

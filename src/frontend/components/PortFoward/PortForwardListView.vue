@@ -14,7 +14,7 @@ import { K8sService } from '@frontend/service/k8s/K8sService'
 import ResourceAgeView from '@frontend/components/common/ResourceAgeView.vue'
 import WorkloadListView from '@frontend/components/common/ResourceListView.vue'
 
-const drawer = useDrawerService()
+const _drawer = useDrawerService()
 const dialog = useDialog()
 
 const selectedNs = ref('default')

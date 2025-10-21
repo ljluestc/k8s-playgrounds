@@ -12,8 +12,8 @@ const props = defineProps({
   isDropdown: Boolean,
 })
 const message = useMessage()
-const dialog = useDialog()
-const drawer = useDrawerService()
+const _dialog = useDialog()
+const _drawer = useDrawerService()
 function copyToClipboard(text) {
   ClipboardHelper.copyToClipboard(text,
     () => {

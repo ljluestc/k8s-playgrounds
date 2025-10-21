@@ -5,7 +5,7 @@ import { Star } from '@vicons/fa'
 import { NButton, NCard, NGi, NGrid, NHr, NIcon, NIconWrapper, NSpace } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 
-const props = defineProps({
+const _props = defineProps({
   x: String,
 })
 const Clusters = ref<Cluster[]>()

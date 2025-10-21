@@ -17,7 +17,7 @@ const props = defineProps({
 
 const dialog = useDialog()
 const drawer = useDrawerService()
-const message = useMessage()
+const _message = useMessage()
 
 function getOptions(): ActionMenuOption[] {
   return [
