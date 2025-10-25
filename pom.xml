@@ -28,7 +28,7 @@
         
         <!-- Coverage Thresholds -->
         <coverage.limit>100</coverage.limit>
-        <coverage.minimum>95</coverage.minimum>
+        <coverage.minimum>100</coverage.minimum>
     </properties>
 
     <dependencies>
