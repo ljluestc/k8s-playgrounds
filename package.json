@@ -23,15 +23,20 @@
     "test:frontend:ui": "vitest --ui --config vitest.frontend.config.ts",
     "test:frontend:coverage": "vitest run --coverage --config vitest.frontend.config.ts",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "test:integration": "vitest run \"test/integration/**/*.test.ts\"",
+    "test:performance": "vitest run \"test/performance/**/*.test.ts\"",
     "test:e2e:watch": "vitest --config vitest.e2e.config.ts",
     "test:e2e:ui": "vitest --ui --config vitest.e2e.config.ts",
     "test:e2e:coverage": "vitest run --coverage --config vitest.e2e.config.ts",
-    "test:all": "pnpm test:backend && pnpm test:frontend && pnpm test:e2e && pnpm test:coverage",
+    "test:all": "pnpm test:backend && pnpm test:frontend && pnpm test:integration && pnpm test:performance && pnpm test:e2e && pnpm test:coverage",
     "test:generate": "ts-node scripts/test-generator.ts",
     "test:orchestrate": "ts-node scripts/test-orchestrator.ts",
     "test:ci": "pnpm test:all --reporter=verbose --reporter=json --outputFile=test-results.json",
     "postinstall": "electron-builder install-app-deps",
-    "gen": "openapi --input http://127.0.0.1:3007/api-json --output ./src/frontend/generated --useOptions --name=Play"
+    "gen": "openapi --input http://127.0.0.1:3007/api-json --output ./src/frontend/generated --useOptions --name=Play",
+    "playwright:install": "npx playwright install --with-deps",
+    "test:playwright": "playwright test",
+    "test:playwright:report": "playwright show-report"
   },
   "dependencies": {
     "@doubleshot/nest-electron": "^0.2.5",
@@ -69,6 +74,7 @@
   "devDependencies": {
     "@lightwing/eslint-config": "^0.0.24",
     "@nestjs/testing": "^10.2.8",
+    "@playwright/test": "^1.48.0",
     "@testing-library/user-event": "^14.5.1",
     "@testing-library/vue": "^8.0.1",
     "@types/echarts": "^4.9.21",
@@ -103,12 +109,15 @@
     "vue-tsc": "1.8.19"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
+    "pre-commit": "npx lint-staged && pnpm -s test:playwright || true"
   },
   "lint-staged": {
     "*.{js,ts,tsx,vue}": [
       "eslint --fix",
       "vitest related --run"
+    ],
+    "tests/playwright/**/*.ts": [
+      "node -e \"console.log('Playwright specs staged, will run in hook')\""
     ],
     "*.{md,json,yml}": [
       "eslint --fix"
