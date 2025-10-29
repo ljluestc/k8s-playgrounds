@@ -1,3 +1,10 @@
+node_modules/
+playwright-report/
+test-results/
+*.log
+*.trace.zip
+*.har
+
 node_modules
 .DS_Store
 dist

@@ -1,22 +1,64 @@
 import { expect, test } from '@playwright/test'
 
-test('site-wide link crawler returns 2xx for internal links', async ({ page, request }) => {
-  await page.goto('/')
+const NOT_FOUND_PATTERNS = [
+  'Page Not Found',
+  'The page you\'re looking for doesn\'t exist',
+  '404',
+]
 
-  const anchors = await page.locator('a').all()
-  const hrefs = new Set<string>()
-  for (const a of anchors) {
-    const href = await a.getAttribute('href')
-    if (!href)
-      continue
-    if (href.startsWith('http') && !href.startsWith('https://ljluestc.github.io'))
-      continue
-    const resolved = href.startsWith('http') ? href : new URL(href, 'https://ljluestc.github.io').toString()
-    hrefs.add(resolved)
-  }
+test('crawl internal links: fail on non-2xx and not-found content', async ({ request }, testInfo) => {
+  const base = (testInfo.project.use as any).baseURL as string | undefined
+  expect(base, 'project baseURL must be defined').toBeTruthy()
+  const BASE = base!.replace(/\/$/, '')
 
-  for (const url of hrefs) {
+  const toVisit: string[] = [`${BASE}/`]
+  const visited = new Set<string>()
+  const errors: { url: string; status?: number; reason: string }[] = []
+  const maxPages = 250
+
+  while (toVisit.length && visited.size < maxPages) {
+    const url = toVisit.shift()!
+    if (visited.has(url))
+      continue
+    visited.add(url)
+
     const res = await request.get(url)
-    expect(res.ok()).toBe(true)
+    if (!res.ok()) {
+      errors.push({ url, status: res.status(), reason: 'non-2xx response' })
+      continue
+    }
+    const html = await res.text()
+    const lowered = html.toLowerCase()
+    if (NOT_FOUND_PATTERNS.some(p => lowered.includes(p.toLowerCase()))) {
+      errors.push({ url, reason: 'not-found content detected' })
+      continue
+    }
+
+    // extract internal anchors (avoid assignment in condition per lint rules)
+    const hrefRegex = /href\s*=\s*"([^"]+)"/gi
+    for (let m = hrefRegex.exec(html); m !== null; m = hrefRegex.exec(html)) {
+      const href = m[1]
+      if (!href || href.startsWith('mailto:') || href.startsWith('tel:'))
+        continue
+      let absolute: string
+      if (href.startsWith('http')) {
+        if (!href.startsWith(BASE))
+          continue
+        absolute = href
+      }
+      else if (href.startsWith('#')) {
+        continue
+      }
+      else {
+        absolute = new URL(href, url).toString()
+      }
+      if (!visited.has(absolute))
+        toVisit.push(absolute)
+    }
   }
+
+  if (errors.length)
+    console.error('Broken pages detected:', errors)
+
+  expect(errors.length).toBe(0)
 })

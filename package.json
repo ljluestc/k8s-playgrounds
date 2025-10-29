@@ -109,7 +109,7 @@
     "vue-tsc": "1.8.19"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx lint-staged && pnpm -s test:playwright || true && (cd operator && go test ./... -run Test -count=1) || true"
+    "pre-commit": "npx lint-staged && pnpm -s test:playwright && (cd operator && go test ./... -run Test -count=1) || true"
   },
   "lint-staged": {
     "*.{js,ts,tsx,vue}": [
