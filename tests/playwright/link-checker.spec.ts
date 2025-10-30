@@ -13,10 +13,10 @@ test('crawl internal links: fail on non-2xx and not-found content', async ({ req
 
   const toVisit: string[] = [`${BASE}/`]
   const visited = new Set<string>()
+  const discovered = new Set<string>(toVisit)
   const errors: { url: string; status?: number; reason: string }[] = []
-  const maxPages = 250
 
-  while (toVisit.length && visited.size < maxPages) {
+  while (toVisit.length) {
     const url = toVisit.shift()!
     if (visited.has(url))
       continue
@@ -52,13 +52,17 @@ test('crawl internal links: fail on non-2xx and not-found content', async ({ req
       else {
         absolute = new URL(href, url).toString()
       }
-      if (!visited.has(absolute))
+      if (!visited.has(absolute)) {
+        if (!discovered.has(absolute))
+          discovered.add(absolute)
         toVisit.push(absolute)
+      }
     }
   }
 
   if (errors.length)
     console.error('Broken pages detected:', errors)
 
-  expect(errors.length).toBe(0)
+  expect(errors.length, 'no broken pages detected').toBe(0)
+  expect(visited.size, '100% internal-link coverage').toBe(discovered.size)
 })
