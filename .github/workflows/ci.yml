@@ -77,8 +77,11 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm playwright:install
 
-      - name: Run Playwright tests
-        run: pnpm test:playwright
+      - name: Run Playwright tests (100% pass gate required)
+        run: |
+          pnpm test:playwright || exit 1
+          # Verify no failures - Playwright exits with non-zero on failure
+          echo "✅ All Playwright tests passed - 100% pass gate enforced"
 
       - name: Upload Playwright report
         if: always()
