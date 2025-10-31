@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const LJ_BASE = process.env.LJL_BASE_URL || 'https://ljluestc.github.io'
-const VISUALGO_BASE = process.env.VISUALGO_BASE_URL || `${LJ_BASE.replace(/\/$/, '')}/visualgo/`
-const YAAPPINTRO_BASE = process.env.YAAPPINTRO_BASE_URL || `${LJ_BASE.replace(/\/$/, '')}/yaappintro/`
+const LOCAL = `http://127.0.0.1:${process.env.PLAYWRIGHT_STATIC_PORT || '4000'}`
+const LJ_BASE = process.env.LJL_BASE_URL || LOCAL
+const VISUALGO_BASE = process.env.VISUALGO_BASE_URL || `${LOCAL}/visualgo/`
+const YAAPPINTRO_BASE = process.env.YAAPPINTRO_BASE_URL || `${LOCAL}/yaappintro/`
 
 export default defineConfig({
   testDir: 'tests/playwright',
@@ -14,6 +15,12 @@ export default defineConfig({
     actionTimeout: 10_000,
     navigationTimeout: 20_000,
     trace: 'on-first-retry',
+  },
+  webServer: {
+    command: 'node scripts/static-server.mjs',
+    url: LOCAL,
+    reuseExistingServer: true,
+    timeout: 30_000,
   },
   projects: [
     {
